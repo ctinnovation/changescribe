@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const rimraf = require('rimraf');
 const { argv } = require('yargs')
   .string('targetVersion')
   .alias('targetVersion', 't')
@@ -19,6 +18,7 @@ const { argv } = require('yargs')
   .demandOption('targetVersion')
   .help();
 
+const { emptyFolder } = require('./helpers/fs');
 const {
   Handlebars, versionTemplate, taskTemplate, headerTemplate,
 } = require('./helpers/hbs');
@@ -98,7 +98,7 @@ async function main() {
 
   writeStream.write(oldChangelogBody);
   writeStream.close();
-  rimraf.sync(releaseFolder);
+  emptyFolder(releaseFolder);
 }
 
 main();
