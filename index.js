@@ -34,6 +34,13 @@ const changelogPath = path.isAbsolute(argv.output)
   ? argv.output : path.resolve(targetRoot, argv.output);
 
 async function main() {
+  const releaseFolderExists = fs.existsSync(releaseFolder);
+
+  if (!releaseFolderExists) {
+    console.error('Unable to find source folder');
+    process.exit(1);
+  }
+
   const changelogExists = fs.existsSync(changelogPath);
   let oldChangelogBody = '';
 
