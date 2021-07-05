@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const rimraf = require('rimraf');
 const { argv } = require('yargs')
   .string('targetVersion')
   .alias('targetVersion', 't')
@@ -90,8 +91,7 @@ async function main() {
 
   writeStream.write(oldChangelogBody);
   writeStream.close();
-
-  // fs.rmSync(releaseFolder, { recursive: true });
+  rimraf.sync(releaseFolder);
 }
 
 main();
