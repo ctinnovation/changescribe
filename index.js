@@ -12,6 +12,9 @@ const { argv } = require('yargs')
   .alias('input', 'i')
   .default('input', path.resolve(process.cwd(), './unreleased'))
   .describe('input', 'Input folder for compiling the changelog')
+  .boolean('includeCommits')
+  .default('includeCommits', false)
+  .describe('includeCommits', 'Include branch commits in new release')
   .demandOption('targetVersion')
   .help();
 
@@ -20,7 +23,7 @@ const {
 } = require('./helpers/hbs');
 const { verifyTargetVersion } = require('./helpers/semver');
 const { VERSION_LINE_REGEX } = require('./helpers/regexprs');
-const { createVersionIndex } = require('./helpers/md');
+const { createVersionIndex, createCommitSummary } = require('./helpers/md');
 
 const targetRoot = path.resolve(process.cwd(), '.');
 const releaseFolder = path.isAbsolute(argv.input)
@@ -78,6 +81,12 @@ async function main() {
     writeStream.write(task);
     writeStream.write('\n');
   });
+
+  if (argv.includeCommits) {
+    writeStream.write('##### Commit history\n\n');
+    const commitSummary = await createCommitSummary();
+    writeStream.write(commitSummary);
+  }
 
   writeStream.write(oldChangelogBody);
   writeStream.close();

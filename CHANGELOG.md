@@ -24,3 +24,7 @@ FORMAT](https://img.shields.io/badge/Format-keepachangelog-orange.svg)](https://
 
 - Impostato origin a `*` sulle impostazioni CORS delle rotte di upload.
 
+##### Commit history
+
+ * feat: BC-120: init project
+ * Initial commit
