@@ -3,8 +3,69 @@ const git = require('simple-git')({
   binary: 'git',
 });
 
-const { Handlebars, versionTemplate } = require('./hbs');
-const { VERSION_LINE_REGEX } = require('./regexprs');
+const { Handlebars, versionTemplate, lineCodeTemplate } = require('./hbs');
+const {
+  VERSION_LINE_REGEX,
+  TASK_SECTION_REGEX,
+  SUBSECTION_TITLE_REGEX,
+  upperFirst,
+  matchesToArray,
+  SUBSECTION_POINT_REGEX,
+} = require('./regexprs');
+
+function parseTaskFile(taskCode, fileContent, currentMap = {}) {
+  if (!fileContent || !fileContent.length) {
+    return currentMap;
+  }
+
+  TASK_SECTION_REGEX.lastIndex = 0;
+  const matches = matchesToArray(TASK_SECTION_REGEX, fileContent);
+
+  const result = currentMap;
+
+  matches.forEach((match, i) => {
+    const { index: matchIndex } = match;
+    let sectionTitle = match[1].trim();
+
+    // allowed section title?
+    if (!sectionTitle.match(SUBSECTION_TITLE_REGEX)) {
+      console.warn('Invalid section title found:', sectionTitle);
+      console.log('Terminating...');
+      process.exit(1);
+    }
+
+    sectionTitle = upperFirst(sectionTitle);
+
+    let subsectionBody = '';
+    // retrieve sub section
+    if (i === matches.length - 1) {
+      // this is the last one => get from match to end
+      subsectionBody = fileContent.substr(
+        matchIndex + sectionTitle.length,
+      );
+    } else {
+      // keep from current match index to next match index
+      subsectionBody = fileContent.substring(
+        matchIndex + sectionTitle.length,
+        matches[i + 1].index,
+      );
+    }
+
+    // parse each point and format as template
+    const pointMatches = matchesToArray(SUBSECTION_POINT_REGEX, subsectionBody);
+    pointMatches.forEach((lineMatch) => {
+      const line = lineMatch[0].replace(/\n|-/gi, '').trim();
+      const lineCompiled = Handlebars.compile(lineCodeTemplate)({
+        line,
+        taskCode,
+      });
+      // concatenate to current subsection string
+      result[sectionTitle] = `${(result[sectionTitle] || '')}\n${lineCompiled}`;
+    });
+  });
+
+  return result;
+}
 
 function createVersionIndex(targetVersion, currentChangelog) {
   VERSION_LINE_REGEX.lastIndex = 0;
@@ -53,4 +114,5 @@ async function createCommitSummary() {
 module.exports = {
   createVersionIndex,
   createCommitSummary,
+  parseTaskFile,
 };
