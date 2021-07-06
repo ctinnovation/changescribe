@@ -5,7 +5,8 @@
   - [My sweet task](#my-sweet-task)
     - [Changed](#changed)
     - [Fixed](#fixed)
-- [Task file suggestions](#task-file-suggestions)
+- [Task file format](#task-file-format)
+  - [Example](#example)
 
 A CHANGELOG.md utility generator. Provide a folder `/unreleased` with a Markdown file for each of your completed tasks: each file should be named with the task or ticket code related.
 
@@ -16,14 +17,12 @@ Run this utility in order to generate or update a CHANGELOG file merging each fi
 In your `unreleased` folder you have a `BC-120.md` file with this content:
 
 ```markdown
-### My sweet task
-
-#### Changed
+## Changed
 
 - I've changed this
 - And also this
 
-#### Fixed
+## Fixed
 
 - I fixed this
 - But also this!
@@ -74,14 +73,27 @@ For a list of the available options please run:
 node . --help
 ```
 
-## Task file suggestions
+## Task file format
 
-We suggest you provide a Markdown file for each of yours task completed on the current branch. Each file:
+You must provide a Markdown file for each of yours task completed on the current branch. Each file:
 
-- Should include a title (h3: `###`)
 - Should be named with the code of the task
-- Should be splitted in these sections (each one specified if necessary and in h4: `####`):
-  - Changed
-  - Fixed
-  - Removed
-  - Added
+- Should be splitted in sections with these titles
+  - \## Changed
+  - \## Fixed
+  - \## Removed
+  - \## Added
+
+Each section should list each change prepended with `-`.
+
+### Example
+
+```markdown
+## Changed
+- change 1
+- change 2
+
+## Fixed
+- fix 1
+- fix 2
+```
