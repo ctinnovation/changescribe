@@ -1,15 +1,15 @@
 # changelogger
 
+A CHANGELOG.md utility generator. Provide a folder `/unreleased` with a Markdown file for each of your completed tasks: each file should be named with the task or ticket code related.
+
+Run this utility in order to generate or update a CHANGELOG file merging each file in a new release. You must specify the [semver version](https://semver.org/lang/it/) code for the next release to be generated.
+
 - [An example](#an-example)
 - [[1.0.0] - 2021-07-05](#100---2021-07-05)
     - [Changed](#changed)
     - [Fixed](#fixed)
 - [Task file format](#task-file-format)
   - [Example](#example)
-
-A CHANGELOG.md utility generator. Provide a folder `/unreleased` with a Markdown file for each of your completed tasks: each file should be named with the task or ticket code related.
-
-Run this utility in order to generate or update a CHANGELOG file merging each file in a new release. You must specify the [semver version](https://semver.org/lang/it/) code for the next release to be generated.
 
 ## An example
 
