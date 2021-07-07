@@ -61,7 +61,7 @@ async function main() {
   verifyTargetVersion(argv.targetVersion, oldChangelogBody);
 
   let releaseFiles = fs.readdirSync(releaseFolder);
-  releaseFiles = releaseFiles.filter((f) => f.endsWith('.md'));
+  releaseFiles = releaseFiles.filter((f) => f.endsWith('.md')).sort();
 
   if (!releaseFiles.length) {
     console.log('No file to parse. All done.');
@@ -105,7 +105,7 @@ async function main() {
   if (!argv.excludeTaskList) {
     tasks.forEach((task) => {
       const badge = Handlebars.compile(taskTemplate)({ taskCode: task });
-      writeStream.write(badge);
+      writeStream.write(`${badge} `);
     });
     writeStream.write('\n');
   }
