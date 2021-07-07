@@ -4,13 +4,22 @@ A CHANGELOG.md utility generator. Provide a folder `/unreleased` with a Markdown
 
 Run this utility in order to generate or update a CHANGELOG file merging each file in a new release. You must specify the [semver version](https://semver.org/lang/it/) code for the next release to be generated.
 
+- [How to install](#how-to-install)
 - [An example](#an-example)
 - [[1.0.0] - 2021-07-05](#100---2021-07-05)
     - [Changed](#changed)
     - [Fixed](#fixed)
 - [Task file format](#task-file-format)
   - [Example](#example)
-- [How to install](#how-to-install)
+
+## How to install
+
+In order to install the package you should be able to access the github npm registry:
+
+1. Create a github access token (https://github.com/settings/tokens/new) with the `repo` and `read:packages` scope
+3. Insert username, access token as password, email
+4. You should be able to download the package: `npm install -g @ctinnovation/changelogger`
+5. Run `changelogger --help`
 
 ## An example
 
@@ -31,7 +40,7 @@ In your `unreleased` folder you have a `BC-120.md` file with this content:
 Running this utility:
 
 ```bash
-node . --targetVersion 1.0.0
+changelogger --targetVersion 1.0.0
 ```
 
 You'll have a CHANGELOG.md like this:
@@ -68,7 +77,7 @@ Feel free to customize your template by modifying the templates inside `template
 For a list of the available options please run:
 
 ```bash
-node . --help
+changelogger --help
 ```
 
 ## Task file format
@@ -95,13 +104,3 @@ Each section should list each change prepended with `-`.
 - fix 1
 - fix 2
 ```
-
-## How to install
-
-In order to install the package you should be able to access the github npm registry:
-
-1. Create a github access token (https://github.com/settings/tokens/new) with the `repo` and `read:packages` scope
-2. Run `npm login --scope=@ctinnovation --registry=https://npm.pkg.github.com` (in order to use that registry on each NPM package prepend with `@ctinnovation/`)
-3. Insert username, access token as password, email
-4. You should be able to download the package: `npm install -g @ctinnovation/changelogger`
-5. Run `changelogger --help`
