@@ -26,7 +26,7 @@ const {
   Handlebars, versionTemplate, taskTemplate, headerTemplate,
 } = require('./helpers/hbs');
 const { verifyTargetVersion } = require('./helpers/semver');
-const { VERSION_LINE_REGEX } = require('./helpers/regexprs');
+const { VERSION_LINE_REGEX, UNRELEASED_LINE_REGEX } = require('./helpers/regexprs');
 const { createVersionIndex, createCommitSummary, parseTaskFile } = require('./helpers/md');
 
 const targetRoot = path.resolve(process.cwd(), '.');
@@ -49,6 +49,13 @@ async function main() {
 
   if (changelogExists) {
     const changelog = fs.readFileSync(changelogPath, 'utf-8');
+
+    if (changelog.search(UNRELEASED_LINE_REGEX) >= 0) {
+      console.error('[Unreleased] section found in changelog. This tool is incompatible with this format.');
+      console.log('In order to avoid data deletion the tool will shut down.');
+      process.exit(1);
+    }
+
     // search for something like "## [4.9.0] - 2021-04-30"
     const startIndex = changelog.search(
       VERSION_LINE_REGEX,
