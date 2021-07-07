@@ -2,7 +2,6 @@
 
 - [An example](#an-example)
 - [[1.0.0] - 2021-07-05](#100---2021-07-05)
-  - [My sweet task](#my-sweet-task)
     - [Changed](#changed)
     - [Fixed](#fixed)
 - [Task file format](#task-file-format)
@@ -50,8 +49,6 @@ FORMAT](https://img.shields.io/badge/Format-keepachangelog-orange.svg)](https://
 ## [1.0.0] - 2021-07-05
 
 [![TASK](https://img.shields.io/badge/TASK-BC%20120-default.svg)](https://ctinnovation.atlassian.net/browse/BC-120)
-
-### My sweet task
 
 #### Changed
 
