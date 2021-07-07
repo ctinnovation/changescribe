@@ -46,7 +46,7 @@ function parseTaskFile(taskCode, fileContent, currentMap = {}) {
     } else {
       // keep from current match index to next match index
       subsectionBody = fileContent.substring(
-        matchIndex + sectionTitle.length,
+        matchIndex + match[0].length,
         matches[i + 1].index,
       );
     }

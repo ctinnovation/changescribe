@@ -1,8 +1,8 @@
-const VERSION_LINE_REGEX = /## \[(\d+\.\d+\.\d+)\]( - \d*-\d*-\d*)?\n/gi;
+const VERSION_LINE_REGEX = /## \[(\d+\.\d+\.\d+)\]( - \d*-\d*-\d*)?(?:\n|$)/gi;
 const UNRELEASED_LINE_REGEX = /## \[Unreleased\]/gi;
-const TASK_SECTION_REGEX = /#+ (\w+)\n/gi;
+const TASK_SECTION_REGEX = /#+ (\w+).*(?:\n|$)*/gi;
 const SUBSECTION_TITLE_REGEX = /Changed|Added|Fixed|Removed/gi;
-const SUBSECTION_POINT_REGEX = /( )*- (\w| )+\n/gi;
+const SUBSECTION_POINT_REGEX = /( )*- .+(?:\n|$)/gi;
 
 function upperFirst(string = '') {
   return `${string.charAt(0).toUpperCase()}${string.substr(1).toLowerCase()}`;
