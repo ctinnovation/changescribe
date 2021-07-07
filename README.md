@@ -98,12 +98,10 @@ Each section should list each change prepended with `-`.
 
 ## How to install
 
-In order to install the package you should be able to access the github npm registry. You should follow this guide: https://docs.npmjs.com/configuring-your-registry-settings-as-an-npm-enterprise-user.
+In order to install the package you should be able to access the github npm registry:
 
-1. Install `npmrc` for handling multiple npm registry profiles locally: `npm i -g npmrc`
-2. Create a new `github` profile: `npmrc -c github`
-3. Set your profile's registry: `npm config set registry https://npm.pkg.github.com`
-4. (optional) Create a profile for NPM public registry: `npmrc -c public`
-5. (optional) Set registry for public profile: `npm config set registry https://registry.npmjs.org/`
-6. Now you can switch between profile with this: `npmrc [PROFILE_NAME]`
-7. And you can install the package: `npm install -g @ctinnovation/changelogger@latest` when on the github profile
+1. Create a github access token (https://github.com/settings/tokens/new) with the `repo` and `read:packages` scope
+2. Run `npm login --scope=@ctinnovation --registry=https://npm.pkg.github.com` (in order to use that registry on each NPM package prepend with `@ctinnovation/`)
+3. Insert username, access token as password, email
+4. You should be able to download the package: `npm install -g @ctinnovation/changelogger`
+5. Run `changelogger --help`
