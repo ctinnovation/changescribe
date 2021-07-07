@@ -10,6 +10,7 @@ Run this utility in order to generate or update a CHANGELOG file merging each fi
     - [Fixed](#fixed)
 - [Task file format](#task-file-format)
   - [Example](#example)
+- [How to install](#how-to-install)
 
 ## An example
 
@@ -94,3 +95,15 @@ Each section should list each change prepended with `-`.
 - fix 1
 - fix 2
 ```
+
+## How to install
+
+In order to install the package you should be able to access the github npm registry. You should follow this guide: https://docs.npmjs.com/configuring-your-registry-settings-as-an-npm-enterprise-user.
+
+1. Install `npmrc` for handling multiple npm registry profiles locally: `npm i -g npmrc`
+2. Create a new `github` profile: `npmrc -c github`
+3. Set your profile's registry: `npm config set registry https://npm.pkg.github.com`
+4. (optional) Create a profile for NPM public registry: `npmrc -c public`
+5. (optional) Set registry for public profile: `npm config set registry https://registry.npmjs.org/`
+6. Now you can switch between profile with this: `npmrc [PROFILE_NAME]`
+7. And you can install the package: `npm install -g @ctinnovation/changelogger@latest` when on the github profile
