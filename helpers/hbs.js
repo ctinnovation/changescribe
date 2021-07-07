@@ -20,10 +20,15 @@ const versionTemplate = fs.readFileSync(
   path.resolve(packageRoot, './templates/version.hbs'),
   'utf-8',
 );
+const lineCodeTemplate = fs.readFileSync(
+  path.resolve(packageRoot, './templates/line.hbs'),
+  'utf-8',
+);
 
 module.exports = {
   Handlebars,
   headerTemplate,
   versionTemplate,
   taskTemplate,
+  lineCodeTemplate,
 };

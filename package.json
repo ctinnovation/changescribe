@@ -1,5 +1,5 @@
 {
-  "name": "changelogger",
+  "name": "@ctinnovation/changelogger",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github-ctinnovation:ctinnovation/changelogger.git"
+    "url": "git@github.com:ctinnovation/changelogger.git"
   },
   "author": "",
   "license": "ISC",

@@ -1,29 +1,28 @@
 # changelogger
 
-- [An example](#an-example)
-- [[1.0.0] - 2021-07-05](#100---2021-07-05)
-  - [My sweet task](#my-sweet-task)
-    - [Changed](#changed)
-    - [Fixed](#fixed)
-- [Task file suggestions](#task-file-suggestions)
-
 A CHANGELOG.md utility generator. Provide a folder `/unreleased` with a Markdown file for each of your completed tasks: each file should be named with the task or ticket code related.
 
 Run this utility in order to generate or update a CHANGELOG file merging each file in a new release. You must specify the [semver version](https://semver.org/lang/it/) code for the next release to be generated.
+
+- [An example](#an-example)
+- [[1.0.0] - 2021-07-05](#100---2021-07-05)
+    - [Changed](#changed)
+    - [Fixed](#fixed)
+- [Task file format](#task-file-format)
+  - [Example](#example)
+- [How to install](#how-to-install)
 
 ## An example
 
 In your `unreleased` folder you have a `BC-120.md` file with this content:
 
 ```markdown
-### My sweet task
-
-#### Changed
+## Changed
 
 - I've changed this
 - And also this
 
-#### Fixed
+## Fixed
 
 - I fixed this
 - But also this!
@@ -52,8 +51,6 @@ FORMAT](https://img.shields.io/badge/Format-keepachangelog-orange.svg)](https://
 
 [![TASK](https://img.shields.io/badge/TASK-BC%20120-default.svg)](https://ctinnovation.atlassian.net/browse/BC-120)
 
-### My sweet task
-
 #### Changed
 
 - I've changed this
@@ -74,14 +71,39 @@ For a list of the available options please run:
 node . --help
 ```
 
-## Task file suggestions
+## Task file format
 
-We suggest you provide a Markdown file for each of yours task completed on the current branch. Each file:
+You must provide a Markdown file for each of yours task completed on the current branch. Each file:
 
-- Should include a title (h3: `###`)
 - Should be named with the code of the task
-- Should be splitted in these sections (each one specified if necessary and in h4: `####`):
-  - Changed
-  - Fixed
-  - Removed
-  - Added
+- Should be splitted in sections with these titles
+  - \## Changed
+  - \## Fixed
+  - \## Removed
+  - \## Added
+
+Each section should list each change prepended with `-`.
+
+### Example
+
+```markdown
+## Changed
+- change 1
+- change 2
+
+## Fixed
+- fix 1
+- fix 2
+```
+
+## How to install
+
+In order to install the package you should be able to access the github npm registry. You should follow this guide: https://docs.npmjs.com/configuring-your-registry-settings-as-an-npm-enterprise-user.
+
+1. Install `npmrc` for handling multiple npm registry profiles locally: `npm i -g npmrc`
+2. Create a new `github` profile: `npmrc -c github`
+3. Set your profile's registry: `npm config set registry https://npm.pkg.github.com`
+4. (optional) Create a profile for NPM public registry: `npmrc -c public`
+5. (optional) Set registry for public profile: `npm config set registry https://registry.npmjs.org/`
+6. Now you can switch between profile with this: `npmrc [PROFILE_NAME]`
+7. And you can install the package: `npm install -g @ctinnovation/changelogger@latest` when on the github profile

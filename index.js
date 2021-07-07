@@ -15,6 +15,9 @@ const { argv } = require('yargs')
   .boolean('includeCommits')
   .default('includeCommits', false)
   .describe('includeCommits', 'Include branch commits in new release')
+  .boolean('excludeTaskList')
+  .default('excludeTaskList', false)
+  .describe('excludeTaskList', 'Exclude tasks list after release title')
   .demandOption('targetVersion')
   .help();
 
@@ -24,7 +27,7 @@ const {
 } = require('./helpers/hbs');
 const { verifyTargetVersion } = require('./helpers/semver');
 const { VERSION_LINE_REGEX, UNRELEASED_LINE_REGEX } = require('./helpers/regexprs');
-const { createVersionIndex, createCommitSummary } = require('./helpers/md');
+const { createVersionIndex, createCommitSummary, parseTaskFile } = require('./helpers/md');
 
 const targetRoot = path.resolve(process.cwd(), '.');
 const releaseFolder = path.isAbsolute(argv.input)
@@ -63,6 +66,15 @@ async function main() {
   }
 
   verifyTargetVersion(argv.targetVersion, oldChangelogBody);
+
+  let releaseFiles = fs.readdirSync(releaseFolder);
+  releaseFiles = releaseFiles.filter((f) => f.endsWith('.md')).sort();
+
+  if (!releaseFiles.length) {
+    console.log('No file to parse. All done.');
+    process.exit(0);
+  }
+
   const writeStream = fs.createWriteStream(changelogPath);
 
   writeStream.on('error', (e) => {
@@ -84,21 +96,40 @@ async function main() {
   writeStream.write(version);
   writeStream.write('\n\n');
 
-  const releaseFiles = fs.readdirSync(releaseFolder);
+  let finalSectionMap = {};
+  const tasks = [];
+
   releaseFiles.forEach((releaseFile) => {
     const taskCode = path.basename(releaseFile, '.md');
     const fullPath = path.resolve(releaseFolder, releaseFile);
     const taskBody = fs.readFileSync(fullPath, 'utf-8');
-    const task = Handlebars.compile(taskTemplate)({
-      taskCode,
-      taskBody,
-    });
-    writeStream.write(task);
-    writeStream.write('\n');
+
+    tasks.push(taskCode);
+    finalSectionMap = parseTaskFile(taskCode, taskBody, finalSectionMap);
   });
 
+  // task summary after version title
+  if (!argv.excludeTaskList) {
+    tasks.forEach((task) => {
+      const badge = Handlebars.compile(taskTemplate)({ taskCode: task });
+      writeStream.write(`${badge} `);
+    });
+    writeStream.write('\n');
+  }
+
+  // task body ordered by subsections
+  Object
+    .keys(finalSectionMap)
+    .sort()
+    .forEach((sectionKey) => {
+      const sectionBody = finalSectionMap[sectionKey];
+      writeStream.write(`\n### ${sectionKey}\n`);
+      writeStream.write(sectionBody);
+      writeStream.write('\n');
+    });
+
   if (argv.includeCommits) {
-    writeStream.write('##### Commit history\n\n');
+    writeStream.write('\n##### Commit history\n\n');
     const commitSummary = await createCommitSummary();
     writeStream.write(commitSummary);
   }
@@ -106,6 +137,8 @@ async function main() {
   writeStream.write(oldChangelogBody);
   writeStream.close();
   emptyFolder(releaseFolder);
+
+  console.log('CHANGELOG generated 👍');
 }
 
 main();
