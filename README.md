@@ -80,6 +80,8 @@ For a list of the available options please run:
 changelogger --help
 ```
 
+> You can pass the `-p` option to automatically infer the version from the package.json of your project.
+
 ## Task file format
 
 You must provide a Markdown file for each of yours task completed on the current branch. Each file:

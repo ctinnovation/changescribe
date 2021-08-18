@@ -1,9 +1,16 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
+
 const path = require('path');
 const fs = require('fs');
 const { argv } = require('yargs')
   .string('targetVersion')
   .alias('targetVersion', 't')
   .describe('targetVersion', 'Target version')
+  .boolean('fromPackageJson')
+  .alias('fromPackageJson', 'p')
+  .default('fromPackageJson', false)
+  .describe('fromPackageJson', 'Retrieve version from pkg.json')
   .string('output')
   .alias('output', 'o')
   .default('output', path.resolve(process.cwd(), './CHANGELOG.md'))
@@ -18,7 +25,14 @@ const { argv } = require('yargs')
   .boolean('excludeTaskList')
   .default('excludeTaskList', false)
   .describe('excludeTaskList', 'Exclude tasks list after release title')
-  .demandOption('targetVersion')
+  .check((args) => {
+    const { targetVersion, fromPackageJson } = args;
+    if (!targetVersion && !fromPackageJson) {
+      throw new Error('Should provide a target version or use the --fromPackageJson flag!');
+    } else {
+      return true; // tell Yargs that the arguments passed the check
+    }
+  })
   .help();
 
 const { emptyFolder } = require('./helpers/fs');
@@ -64,8 +78,25 @@ async function main() {
       oldChangelogBody = changelog.substr(startIndex);
     }
   }
+  let { targetVersion } = argv;
 
-  verifyTargetVersion(argv.targetVersion, oldChangelogBody);
+  if (argv.fromPackageJson) {
+    const pkgPath = path.join(targetRoot, 'package.json');
+    if (!fs.existsSync(pkgPath)) {
+      console.error('Unable to find a valid package.json to retrieve the version from!');
+      process.exit(1);
+    }
+    const pkg = require(pkgPath);
+
+    if (!pkg.version) {
+      console.error('Unable to find a valid version in package.json!');
+      process.exit(1);
+    }
+
+    targetVersion = pkg.version;
+  }
+
+  verifyTargetVersion(targetVersion, oldChangelogBody);
 
   let releaseFiles = fs.readdirSync(releaseFolder);
   releaseFiles = releaseFiles.filter((f) => f.endsWith('.md')).sort();
@@ -84,14 +115,14 @@ async function main() {
 
   // write header template
   const header = Handlebars.compile(headerTemplate)({
-    index: createVersionIndex(argv.targetVersion, oldChangelogBody),
+    index: createVersionIndex(targetVersion, oldChangelogBody),
   });
   writeStream.write(header);
   writeStream.write('\n');
 
   // write version template
   const version = Handlebars.compile(versionTemplate)({
-    version: argv.targetVersion,
+    version: targetVersion,
   });
   writeStream.write(version);
   writeStream.write('\n\n');
