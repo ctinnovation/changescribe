@@ -88,12 +88,12 @@ You must provide a Markdown file for each of yours task completed on the current
 
 - Should be named with the code of the task
 - Should be splitted in sections with these titles
-  - \## Changed
-  - \## Fixed
-  - \## Removed
-  - \## Added
+  - \## Change[d]
+  - \## [hot]Fix[ed]
+  - \## Remove[d]
+  - \## Add[ed]
 
-Each section should list each change prepended with `-`.
+- Each section should list each change prepended with `-`.
 
 ### Example
 
@@ -102,7 +102,9 @@ Each section should list each change prepended with `-`.
 - change 1
 - change 2
 
-## Fixed
+## Fix
 - fix 1
 - fix 2
 ```
+
+> The `[notation]` is used to indicate optional group of characters inside the section title. Each possible variation will be standardised to the form: Changed, Added, Removed, Fixed

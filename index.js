@@ -106,7 +106,8 @@ async function main() {
     process.exit(0);
   }
 
-  const writeStream = fs.createWriteStream(changelogPath);
+  const tempChangelog = `${changelogPath}-temp-${new Date().getTime()}`;
+  const writeStream = fs.createWriteStream(tempChangelog);
 
   writeStream.on('error', (e) => {
     console.error(e);
@@ -165,11 +166,21 @@ async function main() {
     writeStream.write(commitSummary);
   }
 
+  writeStream.on('finish', () => {
+    // write on the final changelog file
+    fs.copyFile(tempChangelog, changelogPath, (err) => {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+      fs.unlinkSync(tempChangelog);
+      emptyFolder(releaseFolder);
+      console.log('CHANGELOG generated 👍');
+    });
+  });
+
   writeStream.write(oldChangelogBody);
   writeStream.close();
-  emptyFolder(releaseFolder);
-
-  console.log('CHANGELOG generated 👍');
 }
 
 main();
