@@ -11,6 +11,7 @@ const {
   upperFirst,
   matchesToArray,
   SUBSECTION_POINT_REGEX,
+  matchSectionTitle,
 } = require('./regexprs');
 
 function parseTaskFile(taskCode, fileContent, currentMap = {}) {
@@ -34,7 +35,7 @@ function parseTaskFile(taskCode, fileContent, currentMap = {}) {
       process.exit(1);
     }
 
-    sectionTitle = upperFirst(sectionTitle);
+    sectionTitle = matchSectionTitle(sectionTitle);
 
     let subsectionBody = '';
     // retrieve sub section
