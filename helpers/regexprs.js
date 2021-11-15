@@ -6,6 +6,7 @@ const CHANGED_REGEX = /changed?|edit(ed)?|updated?/gi;
 const FIXED_REGEX = /(hot)?fix(ed)?/gi;
 const ADDED_REGEX = /add(ed)?|created?/gi;
 const REMOVED_REGEX = /removed?|cancel(led)?/gi;
+const REFACTORED_REGEX = /refactor(ed)?/gi;
 const SUBSECTION_POINT_REGEX = /( )*- .+(?:\n|$)/gi;
 
 function upperFirst(string = '') {
@@ -24,6 +25,9 @@ function matchSectionTitle(currentTitle) {
   }
   if (currentTitle.match(REMOVED_REGEX)) {
     return 'Removed';
+  }
+  if (currentTitle.match(REFACTORED_REGEX)) {
+    return 'Refactor';
   }
   throw new Error(`Critical error: '${currentTitle}' not matched any section title!`);
 }
@@ -52,5 +56,6 @@ module.exports = {
   FIXED_REGEX,
   ADDED_REGEX,
   REMOVED_REGEX,
+  REFACTORED_REGEX,
   matchSectionTitle,
 };
