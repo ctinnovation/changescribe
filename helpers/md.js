@@ -14,7 +14,7 @@ const {
   matchSectionTitle,
 } = require('./regexprs');
 
-function parseTaskFile(taskCode, fileContent, currentMap = {}) {
+function parseTaskFile(taskCode, fileContent, urlTask, currentMap = {}) {
   if (!fileContent || !fileContent.length) {
     return currentMap;
   }
@@ -59,6 +59,7 @@ function parseTaskFile(taskCode, fileContent, currentMap = {}) {
       const lineCompiled = Handlebars.compile(lineCodeTemplate)({
         line,
         taskCode,
+        urlTask,
       });
       // concatenate to current subsection string
       result[sectionTitle] = `${(result[sectionTitle] || '')}\n${lineCompiled}`;

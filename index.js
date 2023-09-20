@@ -3,6 +3,9 @@
 
 const path = require('path');
 const fs = require('fs');
+
+const defaultURL = 'https://ctinnovation.atlassian.net/browse/{taskCode}';
+
 const { argv } = require('yargs')
   .string('targetVersion')
   .alias('targetVersion', 't')
@@ -25,6 +28,13 @@ const { argv } = require('yargs')
   .boolean('excludeTaskList')
   .default('excludeTaskList', false)
   .describe('excludeTaskList', 'Exclude tasks list after release title')
+  .boolean('createOutputIfNotFound')
+  .default('createOutputIfNotFound', true)
+  .describe('createOutputIfNotFound', 'Create a new output file if not found')
+  .string('taskUrlTemplate')
+  .alias('taskUrlTemplate', 'u')
+  .default('taskUrlTemplate', defaultURL)
+  .describe('taskUrlTemplate', 'Associated task URL')
   .check((args) => {
     const { targetVersion, fromPackageJson } = args;
     if (!targetVersion && !fromPackageJson) {
@@ -40,7 +50,7 @@ const {
   Handlebars, versionTemplate, taskTemplate, headerTemplate,
 } = require('./helpers/hbs');
 const { verifyTargetVersion } = require('./helpers/semver');
-const { VERSION_LINE_REGEX, UNRELEASED_LINE_REGEX } = require('./helpers/regexprs');
+const { VERSION_LINE_REGEX, UNRELEASED_LINE_REGEX, URL_TASK_REGEX } = require('./helpers/regexprs');
 const { createVersionIndex, createCommitSummary, parseTaskFile } = require('./helpers/md');
 
 const targetRoot = path.resolve(process.cwd(), '.');
@@ -78,6 +88,22 @@ async function main() {
       oldChangelogBody = changelog.substr(startIndex);
     }
   }
+
+  // check taskUrlTemplate
+  if (argv.taskUrlTemplate !== defaultURL) {
+    const urlRegexCheck = new RegExp(URL_TASK_REGEX);
+    if (!urlRegexCheck.test(argv.taskUrlTemplate)) {
+      console.error('The inserted URL is not supported: the tools accepts valid URL that contains the keyword {taskCode}.');
+      process.exit(1);
+    }
+  }
+
+  if (!changelogExists && !argv.createOutputIfNotFound) {
+    console.error(`Missing file ${changelogPath} and option createOutputIfNotFound set to false.`);
+    console.log('Unable to continue. The tool will be shut down.');
+    process.exit(1);
+  }
+
   let { targetVersion } = argv;
 
   if (argv.fromPackageJson) {
@@ -137,13 +163,15 @@ async function main() {
     const taskBody = fs.readFileSync(fullPath, 'utf-8');
 
     tasks.push(taskCode);
-    finalSectionMap = parseTaskFile(taskCode, taskBody, finalSectionMap);
+    const urlTask = argv.taskUrlTemplate.replace('{taskCode}', taskCode);
+    finalSectionMap = parseTaskFile(taskCode, taskBody, urlTask, finalSectionMap);
   });
 
   // task summary after version title
   if (!argv.excludeTaskList) {
     tasks.forEach((task) => {
-      const badge = Handlebars.compile(taskTemplate)({ taskCode: task });
+      const urlTask = argv.taskUrlTemplate.replace('{taskCode}', task);
+      const badge = Handlebars.compile(taskTemplate)({ taskCode: task, urlTask });
       writeStream.write(`${badge} `);
     });
     writeStream.write('\n');
