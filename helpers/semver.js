@@ -28,6 +28,17 @@ function verifyTargetVersion(targetVersion, currentChangelog) {
   }
 }
 
+function verifyVersionOfChangelog(version) {
+  if (!semver.valid(version)) {
+    console.error(`Found invalid version: ${version}`);
+    console.log('Closing the tool.');
+    process.exit(1);
+  } else {
+    return true;
+  }
+}
+
 module.exports = {
   verifyTargetVersion,
+  verifyVersionOfChangelog,
 };

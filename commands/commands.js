@@ -1,9 +1,8 @@
-#!/usr/bin/env node
 const yargs = require('yargs');
 const { argv } = yargs
   .usage('Utilizzo: node $0 <command> [options]')
-  .command(require('./commands/explore'))
-  .command(require('./commands/generate'))
+  .command(require('./explore'))
+  .command(require('./generate'))
   .demandCommand()
   .argv;
 
