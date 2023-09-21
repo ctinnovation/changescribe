@@ -24,6 +24,10 @@ class Version {
     }
     return 0;
   }
+
+  toString() {
+    return `${this.v1}.${this.v2}.${this.v3}`;
+  }
 }
 
 module.exports = Version;

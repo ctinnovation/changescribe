@@ -2,6 +2,9 @@ const path = require('path');
 const fs = require('fs');
 const { verifyVersionOfChangelog } = require('../../helpers/semver');
 const Version = require('./version');
+const {
+  Handlebars, headerExploreTemplate, headerExploreConsoleTemplate,
+} = require('../../helpers/hbs');
 
 async function handler(argv) {
   // verifico se il file di input esiste
@@ -59,19 +62,31 @@ async function handler(argv) {
       version = new Version(line.slice(0, line.indexOf(']')));
       // controllo se è compresa tra gli estremi:
       if (version.compareTo(min) > 0 && version.compareTo(max) <= 0) {
-        output += line;
+        output += `## [${line}`;
       }
     }
   });
 
   // vedo se stampare il file o mandarlo sull'output
   if (argv.output === 'console') {
+    const header = Handlebars.compile(headerExploreConsoleTemplate)({
+      v1: min.toString(),
+      v2: max.toString(),
+    });
+    output = output.replaceAll(/\[(.*?)\]\((.*?)\)\]/g, '');
+    output = output.replaceAll(/(\[.*?\]\(.*?\))/g, '');
+    console.log(header);
     console.log(output);
   } else {
     const changelogOutputPath = path.isAbsolute(argv.output)
       ? argv.output : path.resolve(targetRoot, argv.output);
     // scrivo il file dove richiesto
     const writableStream = fs.createWriteStream(changelogOutputPath, 'utf-8');
+    const header = Handlebars.compile(headerExploreTemplate)({
+      v1: min.toString(),
+      v2: max.toString(),
+    });
+    writableStream.write(header);
     writableStream.write(output);
     console.log(`File ${changelogOutputPath} written!`);
   }
