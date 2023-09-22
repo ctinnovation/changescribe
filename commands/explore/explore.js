@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 const argvBuilder = function argvBuilder(yargs) {
   yargs
@@ -16,18 +17,20 @@ const argvBuilder = function argvBuilder(yargs) {
     .string('output')
     .alias('output', 'o')
     .default('output', 'console')
-    .describe('output', 'Ouput file')
+    .describe('output', 'Output path')
     .string('input')
     .alias('input', 'i')
     .default('input', path.resolve(process.cwd(), './CHANGELOG.md'))
     .describe('input', 'Input CHANGELOG for explore diffs')
     .check((args) => {
-      const { range } = args;
+      const { range, output } = args;
       if (!range) {
         throw new Error('Should provide a range!');
-      } else {
-        return true; // tell Yargs that the arguments passed the check
       }
+      if (output !== 'console' && !fs.lstatSync(output).isDirectory()) {
+        throw new Error('You must provide a folder, not a file path!');
+      }
+      return true; // tell Yargs that the arguments passed the check
     })
     .help();
 };
