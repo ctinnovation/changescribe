@@ -8,6 +8,10 @@ const ADDED_REGEX = /add(ed)?|created?/gi;
 const REMOVED_REGEX = /removed?|cancel(led)?/gi;
 const REFACTORED_REGEX = /refactor(ed)?/gi;
 const SUBSECTION_POINT_REGEX = /( )*- .+(?:\n|$)/gi;
+const URL_TASK_REGEX = /^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}([-a-zA-Z0-9@:%_\+.~#?&//=]*.{taskCode}[^\s]+)/;
+const EXTRACT_VERSION = /\n+## \[(\d+\.\d+\.\d+)\] - \d{4}-\d{2}-\d{2}\n+/g;
+const REMOVE_TASK_BADGES = /\[(.*?)\]\((.*?)\)\]/g;
+const REMOVE_TASK_LINK = /( ‧ \[.*?\]\(.*?\))/g;
 
 function upperFirst(string = '') {
   return `${string.charAt(0).toUpperCase()}${string.substr(1).toLowerCase()}`;
@@ -58,4 +62,8 @@ module.exports = {
   REMOVED_REGEX,
   REFACTORED_REGEX,
   matchSectionTitle,
+  URL_TASK_REGEX,
+  EXTRACT_VERSION,
+  REMOVE_TASK_BADGES,
+  REMOVE_TASK_LINK,
 };
