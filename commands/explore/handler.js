@@ -7,9 +7,8 @@ const {
   Handlebars, headerExploreTemplate, headerExploreConsoleTemplate,
 } = require('../../helpers/hbs');
 const { EXTRACT_VERSION, REMOVE_TASK_BADGES, REMOVE_TASK_LINK } = require('../../helpers/regexprs');
-const { name } = require('../../package.json');
 
-function printOnConsole(outputArray, min, max) {
+function printOnConsole(outputArray, min, max, name) {
   const header = Handlebars.compile(headerExploreConsoleTemplate)({
     name,
     v1: min.toString(),
@@ -20,22 +19,22 @@ function printOnConsole(outputArray, min, max) {
   outputArray.forEach((line) => {
     let changelogLine = line.replace(REMOVE_TASK_BADGES, '');
     changelogLine = changelogLine.replace(REMOVE_TASK_LINK, '');
-    // remove parentheses
-    const topLine = changelogLine.slice(0, changelogLine.indexOf('\n')).replaceAll('(', '').replaceAll(')', '');
-    changelogLine = changelogLine.slice(changelogLine.indexOf('\n'));
-    changelogLine = changelogLine.replace('(', '');
-    changelogLine = changelogLine.replace(')', '');
-    changelogLine = topLine + changelogLine;
     if (alternateColor) {
-      console.log(coloring(changelogLine, 'green'));
+      // version notes
+      console.log(coloring(`## ${changelogLine}`, 'green'));
     } else {
+      // remove parentheses from task url
+      const topLine = changelogLine.slice(0, changelogLine.indexOf('\n')).replaceAll('(', '').replaceAll(')', '');
+      changelogLine = changelogLine.slice(changelogLine.indexOf('\n'));
+      changelogLine = topLine + changelogLine;
+
       console.log(coloring(changelogLine, 'white'));
     }
     alternateColor = !alternateColor;
   });
 }
 
-function writeOnFile(outputPath, output, targetRoot, min, max) {
+function writeOnFile(outputPath, output, targetRoot, min, max, name) {
   const outputFile = path.join(outputPath, `${min}~${max}.md`);
   const changelogOutputPath = path.isAbsolute(outputFile)
     ? outputFile : path.resolve(targetRoot, outputFile);
@@ -46,9 +45,16 @@ function writeOnFile(outputPath, output, targetRoot, min, max) {
     v1: min.toString(),
     v2: max.toString(),
   });
+  let isHeader = true;
   writableStream.write(header);
   output.forEach((line) => {
-    writableStream.write(line);
+    if (isHeader) {
+      writableStream.write(`## ${line}`);
+    } else {
+      writableStream.write(line);
+    }
+    isHeader = !isHeader;
+    writableStream.write('\n');
   });
   console.log(`File ${changelogOutputPath} written!`);
 }
@@ -56,6 +62,13 @@ function writeOnFile(outputPath, output, targetRoot, min, max) {
 async function handler(argv) {
   // verify if file exists
   const targetRoot = path.resolve(process.cwd(), '.');
+  const pkgPath = path.join(targetRoot, 'package.json');
+  let name = 'Unknown';
+  if (!fs.existsSync(pkgPath)) {
+    console.warning('Unable to find a valid package.json to retrieve the name from!');
+  } else {
+    name = require(pkgPath).name;
+  }
   const changelogInputPath = path.isAbsolute(argv.input)
     ? argv.input : path.resolve(targetRoot, argv.input);
 
@@ -119,9 +132,9 @@ async function handler(argv) {
   }
   // choose the correct output
   if (argv.output === 'console') {
-    printOnConsole(output, min, max);
+    printOnConsole(output, min, max, name);
   } else {
-    writeOnFile(argv.output, output, targetRoot, min, max);
+    writeOnFile(argv.output, output, targetRoot, min, max, name);
   }
 }
 
