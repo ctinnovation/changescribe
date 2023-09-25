@@ -1,4 +1,4 @@
-const { argvBuilder } = require('./explore');
+const { argvBuilder } = require('./argv');
 const { handler } = require('./handler');
 
 exports.command = 'explore';

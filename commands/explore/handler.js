@@ -1,24 +1,33 @@
 const path = require('path');
 const fs = require('fs');
+const semver = require('semver');
 const { verifyVersionOfChangelog } = require('../../helpers/semver');
-const Version = require('./version');
 const { coloring } = require('../../helpers/colorText');
 const {
   Handlebars, headerExploreTemplate, headerExploreConsoleTemplate,
 } = require('../../helpers/hbs');
+const { EXTRACT_VERSION, REMOVE_TASK_BADGES, REMOVE_TASK_LINK } = require('../../helpers/regexprs');
+const { name } = require('../../package.json');
 
 function printOnConsole(outputArray, min, max) {
   const header = Handlebars.compile(headerExploreConsoleTemplate)({
+    name,
     v1: min.toString(),
     v2: max.toString(),
   });
   console.log(header);
   let alternateColor = true;
   outputArray.forEach((line) => {
-    let changelogLine = line.replace(/\[(.*?)\]\((.*?)\)\]/g, '');
-    changelogLine = changelogLine.replace(/(‧ \[.*?\]\(.*?\))/g, '');
+    let changelogLine = line.replace(REMOVE_TASK_BADGES, '');
+    changelogLine = changelogLine.replace(REMOVE_TASK_LINK, '');
+    // remove parentheses
+    const topLine = changelogLine.slice(0, changelogLine.indexOf('\n')).replaceAll('(', '').replaceAll(')', '');
+    changelogLine = changelogLine.slice(changelogLine.indexOf('\n'));
+    changelogLine = changelogLine.replace('(', '');
+    changelogLine = changelogLine.replace(')', '');
+    changelogLine = topLine + changelogLine;
     if (alternateColor) {
-      console.log(coloring(changelogLine, 'gray'));
+      console.log(coloring(changelogLine, 'green'));
     } else {
       console.log(coloring(changelogLine, 'white'));
     }
@@ -33,6 +42,7 @@ function writeOnFile(outputPath, output, targetRoot, min, max) {
     // write the file on the correct path
   const writableStream = fs.createWriteStream(changelogOutputPath, 'utf-8');
   const header = Handlebars.compile(headerExploreTemplate)({
+    name,
     v1: min.toString(),
     v2: max.toString(),
   });
@@ -61,26 +71,20 @@ async function handler(argv) {
   const fromTo = argv.range.trim();
   const splittedVersions = fromTo.split('~');
   // zero arguments
-  if (fromTo === '' || splittedVersions.length === 0) {
-    console.error('No range found!');
-    console.log('Closing the tool.');
-    process.exit(1);
-  // to last changelog
-  } else if (splittedVersions.length === 1 && verifyVersionOfChangelog(splittedVersions[0])) {
-    min = new Version(splittedVersions[0]);
-    max = 'ACTUAL';
+  if (splittedVersions.length === 1 && verifyVersionOfChangelog(splittedVersions[0])) {
+    min = splittedVersions[0];
+    max = 'LATEST';
   // range
   } else if (splittedVersions.length === 2
         && verifyVersionOfChangelog(splittedVersions[0])
         && verifyVersionOfChangelog(splittedVersions[1])) {
-    // check i f the versions are in the correct order
-    if (new Version(splittedVersions[0]).compareTo(new Version(splittedVersions[1])) > 0) {
-      console.log('It looks like you reversed the order of the range in the changelog: don\'t worry.');
-      min = new Version(splittedVersions[1]);
-      max = new Version(splittedVersions[0]);
-    } else {
-      min = new Version(splittedVersions[0]);
-      max = new Version(splittedVersions[1]);
+    // check if the versions are in the correct order
+    min = splittedVersions[0];
+    max = splittedVersions[1];
+    if (!semver.lt(splittedVersions[0], splittedVersions[1])) {
+      console.warn('It looks like you reversed the order of the range in the changelog: reversing them.');
+      min = splittedVersions[1];
+      max = splittedVersions[0];
     }
   // any other input
   } else {
@@ -91,26 +95,25 @@ async function handler(argv) {
 
   const output = [];
 
-  let changelogLines = lines.split('## [');
+  let changelogLines = lines.split(EXTRACT_VERSION);
   // delete the intestation
   changelogLines = changelogLines.slice(1);
-  changelogLines.forEach((line) => {
-    let version = line.slice(0, line.indexOf(']'));
+  for (let i = 0; i < changelogLines.length; i += 2) {
+    const version = changelogLines[i].trim();
     if (verifyVersionOfChangelog(version)) {
-      version = new Version(line.slice(0, line.indexOf(']')));
-      // controllo se è compresa tra gli estremi:
-      if (version.compareTo(min) > 0 && version.compareTo(max) <= 0) {
-        output.push(`## [${line}`);
-      }
       // check if it's the last version
-      if (max === 'ACTUAL') {
+      if (max === 'LATEST') {
         max = version;
       }
+      if (!semver.gt(version, max) && !semver.lte(version, min)) {
+        output.push(changelogLines[i].trim());
+        output.push(changelogLines[i + 1]);
+      }
     }
-  });
+  }
   // check if file will be empty
   if (output.length === 0) {
-    console.error('No relese found that respects the parameters entered');
+    console.error('No release found that respects the parameters entered');
     console.log('No file will be generated');
     process.exit(0);
   }

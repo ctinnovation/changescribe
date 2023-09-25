@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 
-const defaultURL = 'https://ctinnovation.atlassian.net/browse/{taskCode}';
+const DEFAULT_TASK_URL = 'https://ctinnovation.atlassian.net/browse/{taskCode}';
 
 const { emptyFolder } = require('../../helpers/fs');
 const {
@@ -48,7 +48,7 @@ async function handler(argv) {
   }
 
   // check taskUrlTemplate
-  if (argv.taskUrlTemplate !== defaultURL) {
+  if (argv.taskUrlTemplate !== DEFAULT_TASK_URL) {
     const urlRegexCheck = new RegExp(URL_TASK_REGEX);
     if (!urlRegexCheck.test(argv.taskUrlTemplate)) {
       console.error('The inserted URL is not supported: the tools accepts valid URL that contains the keyword {taskCode}.');

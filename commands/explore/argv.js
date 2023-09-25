@@ -14,6 +14,7 @@ const argvBuilder = function argvBuilder(yargs) {
     .string('range')
     .alias('range', 'r')
     .describe('range', 'Range of versions in a format like X.Y.Z ~ A.B.C')
+    .demandOption('range', 'Should provide a range!')
     .string('output')
     .alias('output', 'o')
     .default('output', 'console')

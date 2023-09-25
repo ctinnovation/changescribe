@@ -41,9 +41,12 @@ const argvBuilder = function argvBuilder(yargs) {
     .default('taskUrlTemplate', defaultURL)
     .describe('taskUrlTemplate', 'Associated task URL')
     .check((args) => {
-      const { targetVersion, fromPackageJson } = args;
+      const { targetVersion, fromPackageJson, taskUrlTemplate } = args;
       if (!targetVersion && !fromPackageJson) {
         throw new Error('Should provide a target version or use the --fromPackageJson flag!');
+      }
+      if (taskUrlTemplate && !taskUrlTemplate.includes('{taskCode}')) {
+        throw new Error('Should provide a URL that contains `{taskCode}`!');
       } else {
         return true; // tell Yargs that the arguments passed the check
       }
