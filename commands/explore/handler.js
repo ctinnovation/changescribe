@@ -118,7 +118,7 @@ async function handler(argv) {
       if (max === 'LATEST') {
         max = version;
       }
-      if (!semver.gt(version, max) && !semver.lte(version, min)) {
+      if (!semver.gt(version, max) && !semver.lt(version, min)) {
         output.push(changelogLines[i].trim());
         output.push(changelogLines[i + 1]);
       }
