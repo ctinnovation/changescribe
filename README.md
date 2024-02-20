@@ -1,4 +1,4 @@
-# changelogger
+# @ctinnovation/changelogger
 
 ![changelogger logo](./changelogger.jpeg)
 
