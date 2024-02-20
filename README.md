@@ -1,6 +1,6 @@
 # changelogger
 
-
+![changelogger logo](./changelogger.jpeg)
 
 A CHANGELOG.md utility generator. Provide a folder `/unreleased` with a Markdown file for each of your completed tasks: each file should be named with the task or ticket code related.
 
