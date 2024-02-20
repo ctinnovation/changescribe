@@ -1,16 +1,14 @@
 const path = require('path');
 
-const defaultURL = 'https://ctinnovation.atlassian.net/browse/{taskCode}';
-
 const argvBuilder = function argvBuilder(yargs) {
   yargs
     .example(
       '$0 generate -t 1.0.0',
-      'Genera il changelog alla versione 1.0.0',
+      'Generate CHANGELOG for version 1.0.0',
     )
     .example(
       '$0 -t 1.0.0',
-      'Genera il changelog alla versione 1.0.0',
+      'Generate CHANGELOG for version 1.0.0',
     )
     .string('targetVersion')
     .alias('targetVersion', 't')
@@ -38,8 +36,8 @@ const argvBuilder = function argvBuilder(yargs) {
     .describe('createOutputIfNotFound', 'Create a new output file if not found')
     .string('taskUrlTemplate')
     .alias('taskUrlTemplate', 'u')
-    .default('taskUrlTemplate', defaultURL)
     .describe('taskUrlTemplate', 'Associated task URL')
+    .example('taskUrlTemplate', 'https://jira.com/browse/{taskCode}')
     .check((args) => {
       const { targetVersion, fromPackageJson, taskUrlTemplate } = args;
       if (!targetVersion && !fromPackageJson) {
@@ -51,6 +49,7 @@ const argvBuilder = function argvBuilder(yargs) {
         return true; // tell Yargs that the arguments passed the check
       }
     })
+    .demandOption('taskUrlTemplate')
     .help();
 };
 

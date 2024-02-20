@@ -9,15 +9,15 @@ FORMAT](https://img.shields.io/badge/Format-keepachangelog-orange.svg)](https://
 
 ## [2.0.0] - 2023-09-25
 
-[![TASK](https://img.shields.io/badge/TASK-BAC%20838-default.svg)](https://ctinnovation.atlassian.net/browse/BAC-838) [![TASK](https://img.shields.io/badge/TASK-BAC%20839-default.svg)](https://ctinnovation.atlassian.net/browse/BAC-839) 
+[![TASK](https://img.shields.io/badge/TASK-BAC%20838-default.svg)](https://jira.com/browse/PR-838) [![TASK](https://img.shields.io/badge/TASK-BAC%20839-default.svg)](https://jira.com/browse/PR-839) 
 
 ### Added
 
-- Aggiunta comando `explore` per ottenere una parte di un file `CHANGELOG.md` più  grande ‧ [BAC-838](https://ctinnovation.atlassian.net/browse/BAC-838)
-- Aggiunta possibilità di stampare il markdown ottenuto su console; aggiunta colori per rendere più leggibile l'output ‧ [BAC-838](https://ctinnovation.atlassian.net/browse/BAC-838)
-- Aggiunta flag `createOutputIfNotFound` default a `true` ‧ [BAC-839](https://ctinnovation.atlassian.net/browse/BAC-839)
-- Aggiunta flag `taskUrlTemplate` per impostare un URL diverso ‧ [BAC-839](https://ctinnovation.atlassian.net/browse/BAC-839)
+- Aggiunta comando `explore` per ottenere una parte di un file `CHANGELOG.md` più  grande ‧ [PR-838](https://jira.com/browse/PR-838)
+- Aggiunta possibilità di stampare il markdown ottenuto su console; aggiunta colori per rendere più leggibile l'output ‧ [PR-838](https://jira.com/browse/PR-838)
+- Aggiunta flag `createOutputIfNotFound` default a `true` ‧ [PR-839](https://jira.com/browse/PR-839)
+- Aggiunta flag `taskUrlTemplate` per impostare un URL diverso ‧ [PR-839](https://jira.com/browse/PR-839)
 
 ### Changed
 
-- impostato il comando di default come `generate` ‧ [BAC-838](https://ctinnovation.atlassian.net/browse/BAC-838)
+- impostato il comando di default come `generate` ‧ [PR-838](https://jira.com/browse/PR-838)

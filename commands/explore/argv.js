@@ -5,11 +5,11 @@ const argvBuilder = function argvBuilder(yargs) {
   yargs
     .example(
       '$0 explore --range 1.2.4~3.2.1',
-      'Genera il riassunto del file CHANGELOG.md dalla versione 1.2.4 esclusa alla versione 3.2.1',
+      'Generate CHANGELOG summary from version 1.2.4 (exclusive) to version 3.2.1',
     )
     .example(
       '$0 explore --range 1.2.4',
-      'Genera il riassunto del file CHANGELOG.md dalla versione 1.2.4 esclusa all\'ultima versione trovata',
+      'Generate CHANGELOG summary from version 1.2.4 (exclusive) to the latest',
     )
     .string('range')
     .alias('range', 'r')

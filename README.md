@@ -1,29 +1,31 @@
 # changelogger
 
+
+
 A CHANGELOG.md utility generator. Provide a folder `/unreleased` with a Markdown file for each of your completed tasks: each file should be named with the task or ticket code related.
 
 Run this utility in order to generate or update a CHANGELOG file merging each file in a new release or explore a range of versions included in the CHANGELOG. You must specify the [semver version](https://semver.org/lang/it/) code for the next release to be generated.
 
-- [changelogger](#changelogger)
-  - [How to install](#how-to-install)
-  - [Usage](#usage)
-    - [Generate](#generate)
-    - [Explore](#explore)
-  - [Task file format](#task-file-format)
-    - [Example](#example)
+- [Installation](#installation)
+- [Commands and usage](#commands-and-usage)
+  - [Generate (default)](#generate-default)
+  - [Explore](#explore)
+  - [Init](#init)
+- [Task file format](#task-file-format)
+  - [Example](#example)
 
-## How to install
+## Installation
 
-In order to install the package you should be able to access the github npm registry:
+```bash
+npm install -g @ctinnovation/changelogger
+changelogger --help
+```
 
-1. Create a github access token (https://github.com/settings/tokens/new) with the `repo` and `read:packages` scope
-3. Insert username, access token as password, email
-4. You should be able to download the package: `npm install -g @ctinnovation/changelogger`
-5. Run `changelogger --help`
+## Commands and usage
 
-## Usage
-### Generate
-In your `unreleased` folder you have a `BC-120.md` file with this content:
+### Generate (default)
+
+In your `unreleased` folder you have a `PR-120.md` file with this content:
 
 ```markdown
 ## Added 
@@ -65,7 +67,7 @@ You'll have a CHANGELOG.md like this:
 > 
 > ## [1.0.0] - 2023-09-26
 > 
-> [![TASK](https://img.shields.io/badge/TASK-BC%20120-default.svg)](https://ctinnovation.atlassian.net/browse/BC-120)
+> [![TASK](https://img.shields.io/badge/TASK-BC%20120-default.svg)](https://jira.com/browse/PR-120)
 >
 > #### Added
 > - I added this
@@ -96,18 +98,20 @@ You can also specify:
 For a description of all the available options please run:
 
 ```bash
-changelogger --help
+changelogger generate --help
 ```
 
 > You can pass the `-p` option to automatically infer the version from the package.json of your project.
 
 ### Explore
+
 You can explore a range of versions contained in a `CHANGELOG.md` file generated with this tool:
 
 ```bash
 changelogger explore --range 1.2.1
 ```
-This command will exctract you a range of versions, in this case from 1.2.1 to the lastest.
+
+This command will exctract you a range of versions, in this case from 1.2.1 to the latest.
 You'll get a console logs similar to the following:
 
 ---
@@ -120,13 +124,13 @@ You'll get a console logs similar to the following:
 >VERSIONING https://semver.org/spec/v2.0.0.html
 >
 >## 1.3.1
->https://ctinnovation.atlassian.net/browse/{taskCode}
+>https://jira.com/browse/{taskCode}
 >
 >### Added
 >
 >- I added this
 >## 1.2.5
->https://ctinnovation.atlassian.net/browse/{taskCode}
+>https://jira.com/browse/{taskCode}
 >
 >### Added
 >
@@ -135,7 +139,7 @@ You'll get a console logs similar to the following:
 >- I fixed this
 >
 >## 1.2.1
->https://ctinnovation.atlassian.net/browse/{taskCode}
+>https://jira.com/browse/{taskCode}
 >
 >### Added
 >
@@ -145,16 +149,26 @@ You'll get a console logs similar to the following:
 >
 ---
 You must specify:
+
 - `range`
 
 You can also specify:
+
 - `input`
 - `output`
 
 For a description of all the available options please run:
 
 ```bash
-changelogger --help
+changelogger explore --help
+```
+
+### Init
+
+Creates a new empty CHANGELOG.md file. 
+
+```bash
+changelogger init
 ```
 
 ## Task file format

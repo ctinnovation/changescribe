@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node . --targetVersion 1.0.0",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postversion": "git push --set-upstream origin main && git push --tags"
+    "test": "exit 0",
+    "version": "git branch -D 'release_'$npm_package_version || true && git checkout -b 'release_'$npm_package_version && changelogger -p && git add .",
+    "postversion": "git commit -mv$npm_package_version && git push --set-upstream origin 'release_'$npm_package_version"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,6 @@
   },
   "bin": "cli.js",
   "engines": {
-    "node": ">=10"
+    "node": ">=16"
   }
 }
