@@ -12,6 +12,9 @@
     "project",
     "management"
   ],
+  "contributors": [
+    "giovanni-bertoncelli"
+  ],
   "scripts": {
     "start": "node . --targetVersion 1.0.0",
     "test": "exit 0",
