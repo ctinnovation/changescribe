@@ -4,16 +4,22 @@
   "description": "",
   "main": "index.js",
   "keywords": [
-    "github",
-    "gitstronaut",
-    "github explorer",
-    "explorer",
-    "space",
+    "markdown",
+    "changelog",
+    "changelog.md",
+    "changelogger",
     "project",
-    "management"
+    "management",
+    "versioning",
+    "semver",
+    "devops",
+    "tool",
+    "changelog-generator",
+    "code"
   ],
   "contributors": [
-    "giovanni-bertoncelli"
+    "giovanni-bertoncelli",
+    "elia-piacentini"
   ],
   "scripts": {
     "start": "node . --targetVersion 1.0.0",
