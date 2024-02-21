@@ -204,7 +204,7 @@ For the `generate` command you must provide a Markdown file for each of yours ta
   - If anything in your list is a breaking change you can prepend your list with `[breaking]`
 
 
-> 🔥 The CHANGELOG format is ispired to [keepachangelog](https://keepachangelog.com/it-IT/1.0.0/)
+> 🔥 The CHANGELOG format inspires to [keepachangelog](https://keepachangelog.com/it-IT/1.0.0/)
 
 ### Example
 
