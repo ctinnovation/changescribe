@@ -1,7 +1,7 @@
 const VERSION_LINE_REGEX = /## \[(\d+\.\d+\.\d+)\]( - \d*-\d*-\d*)?(?:\n|$)/gi;
 const UNRELEASED_LINE_REGEX = /## \[Unreleased\]/gi;
 const TASK_SECTION_REGEX = /#+ (\w+).*(?:\n|$)*/gi;
-const SUBSECTION_TITLE_REGEX = /changed?|edit(ed)?|add(ed)?|(hot)?fix(ed)?|removed?|cancel(led)?|updated?|created?/gi;
+const SUBSECTION_TITLE_REGEX = /changed?|edit(ed)?|add(ed)?|(hot)?fix(ed)?|removed?|cancel(led)?|updated?|created?|refactor(ed)?/gi;
 const CHANGED_REGEX = /changed?|edit(ed)?|updated?/gi;
 const FIXED_REGEX = /(hot)?fix(ed)?/gi;
 const ADDED_REGEX = /add(ed)?|created?/gi;
