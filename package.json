@@ -3,6 +3,15 @@
   "version": "1.1.1",
   "description": "",
   "main": "index.js",
+  "keywords": [
+    "github",
+    "gitstronaut",
+    "github explorer",
+    "explorer",
+    "space",
+    "project",
+    "management"
+  ],
   "scripts": {
     "start": "node . --targetVersion 1.0.0",
     "test": "exit 0",
