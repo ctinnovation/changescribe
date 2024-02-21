@@ -1,9 +1,9 @@
-const { argvBuilder } = require('./argv');
-const { handler } = require('./handler');
+const { argvBuilder } = require('./argv')
+const { handler } = require('./handler')
 
-exports.command = 'explore';
+exports.command = 'explore'
 
-exports.describe = 'Explore changelog';
+exports.describe = 'Explore changelog'
 
-exports.builder = argvBuilder;
-exports.handler = handler;
+exports.builder = argvBuilder
+exports.handler = handler

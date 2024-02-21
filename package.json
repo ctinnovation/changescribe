@@ -1,5 +1,5 @@
 {
-  "name": "@ctinnovation/changelogger",
+  "name": "changescribe",
   "version": "1.1.1",
   "description": "",
   "main": "index.js",
@@ -24,7 +24,7 @@
   "scripts": {
     "start": "node . --targetVersion 1.0.0",
     "test": "exit 0",
-    "version": "git branch -D 'release_'$npm_package_version || true && git checkout -b 'release_'$npm_package_version && changelogger -p && git add .",
+    "version": "git branch -D 'release_'$npm_package_version || true && git checkout -b 'release_'$npm_package_version && node ./cli.js -p && git add .",
     "postversion": "git commit -mv$npm_package_version && git push --set-upstream origin 'release_'$npm_package_version"
   },
   "repository": {
@@ -41,9 +41,9 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "eslint": "^7.30.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.23.4"
+    "eslint": "^8.56.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1"
   },
   "bin": "cli.js",
   "engines": {
