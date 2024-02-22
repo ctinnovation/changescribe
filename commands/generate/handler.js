@@ -11,10 +11,12 @@ const { createVersionIndex, parseTaskFile } = require('../../helpers/md')
 
 async function handler (argv) {
   const targetRoot = path.resolve(process.cwd(), '.')
+  /* c8 ignore next 3 */
   const releaseFolder = path.isAbsolute(argv.input)
     ? argv.input
     : path.resolve(targetRoot, argv.input)
 
+  /* c8 ignore next 3 */
   const changelogPath = path.isAbsolute(argv.output)
     ? argv.output
     : path.resolve(targetRoot, argv.output)

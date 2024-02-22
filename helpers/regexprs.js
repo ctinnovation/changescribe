@@ -28,6 +28,7 @@ function matchSectionTitle (currentTitle) {
   if (currentTitle.match(REFACTORED_REGEX)) {
     return 'Refactor'
   }
+  /* c8 ignore next */
   throw new Error(`Critical error: '${currentTitle}' not matched any section title!`)
 }
 

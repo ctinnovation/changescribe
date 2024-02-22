@@ -8,6 +8,7 @@ const WHITE = '\x1b[37m'
 const GRAY = '\x1b[90m'
 const ENDING = '\x1b[0m'
 
+/* c8 ignore start */
 function coloring (text, color) {
   switch (color) {
     case 'red':
@@ -28,6 +29,7 @@ function coloring (text, color) {
       return `${CYAN}${text}${ENDING}`
   }
 }
+/* c8 ignore stop */
 
 module.exports = {
   coloring

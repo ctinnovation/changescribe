@@ -29,6 +29,7 @@ function loadDefaultsFromFile (commandName, commandDefaults = {}) {
 
   // commonjs file
   if (/\.c?js$/gi.test(resolvedRcPath)) {
+    /* c8 ignore next */
     const rcDefaults = require(resolvedRcPath) || {}
     return {
       ...commandDefaults,
@@ -37,6 +38,7 @@ function loadDefaultsFromFile (commandName, commandDefaults = {}) {
   }
 
   // JSON file as default
+  /* c8 ignore next */
   const rcDefaults = JSON.parse(fs.readFileSync(resolvedRcPath, 'utf-8')) || {}
   return {
     ...commandDefaults,

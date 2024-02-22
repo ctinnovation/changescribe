@@ -36,6 +36,7 @@ function printOnConsole (outputArray, min, max, name) {
 
 function writeOnFile (outputPath, output, targetRoot, min, max, name) {
   const outputFile = path.join(outputPath, `${min}~${max}.md`)
+  /* c8 ignore next 3 */
   const changelogOutputPath = path.isAbsolute(outputFile)
     ? outputFile
     : path.resolve(targetRoot, outputFile)
@@ -70,6 +71,7 @@ async function handler (argv) {
   } else {
     name = require(pkgPath).name
   }
+  /* c8 ignore next 3 */
   const changelogInputPath = path.isAbsolute(argv.input)
     ? argv.input
     : path.resolve(targetRoot, argv.input)

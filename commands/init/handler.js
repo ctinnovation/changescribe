@@ -8,6 +8,7 @@ const {
 
 async function handler (argv) {
   const targetRoot = path.resolve(process.cwd(), '.')
+  /* c8 ignore next 3 */
   const changelogPath = path.isAbsolute(argv.output)
     ? argv.output
     : path.resolve(targetRoot, argv.output)

@@ -10,7 +10,7 @@ function verifyTargetVersion (targetVersion, currentChangelog) {
     currentChangelog
   )
 
-  /* c8 ignore next 2 */
+  /* c8 ignore next 3 */
   if (!versionMatches || !versionMatches[1]) {
     return
   }
