@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.REPO_ACCESS }}
+          token: ${{ secrets.PUBLIC_REPO_ACCESS }}
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
@@ -93,7 +93,7 @@ jobs:
         if: "${{ env.TAG }}"
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.REPO_ACCESS }}
+          token: ${{ secrets.PUBLIC_REPO_ACCESS }}
 
       - name: Tagging
         if: "${{ env.TAG }}"
