@@ -29,11 +29,6 @@ jobs:
         with:
           node-version: "20.x"
 
-      - name: install dependencies
-        run: npm install -g changescribe
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_GET_TOKEN}}
-
       - name: setup git config
         run: |
           # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
