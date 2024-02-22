@@ -25,7 +25,7 @@
   "scripts": {
     "start": "node . --targetVersion 1.0.0",
     "test": "tap run --coverage-report=lcov",
-    "version": "git branch -D 'release_'$npm_package_version || true && git checkout -b 'release_'$npm_package_version && node ./cli.js -p && git add .",
+    "version": "git branch -D 'release_'$npm_package_version || true && git checkout -b 'release_'$npm_package_version && node ./cli.js && git add .",
     "postversion": "git commit -mv$npm_package_version && git push --set-upstream origin 'release_'$npm_package_version"
   },
   "repository": {

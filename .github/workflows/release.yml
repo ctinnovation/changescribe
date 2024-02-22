@@ -28,8 +28,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
-          registry-url: https://npm.pkg.github.com/
-          scope: "@ctinnovation"
 
       - name: install dependencies
         run: npm install -g changescribe
@@ -121,14 +119,6 @@ jobs:
               target_commitish: "${{ github.sha}}",
               name: "${{ env.TAG }}"
             })
-
-      - name: Setup Node.js environment
-        if: "${{ env.TAG }}"
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20.x"
-          registry-url: https://registry.npmjs.org/
-          scope: "@ctinnovation"
 
       - name: NPM package publish (npmjs registry)
         if: "${{ env.TAG }}"
