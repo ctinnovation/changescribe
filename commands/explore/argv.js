@@ -31,17 +31,15 @@ const argvBuilder = function argvBuilder (yargs) {
     .default('input', defaults.input)
     .describe('input', 'Input CHANGELOG for explore diffs')
     .check((args) => {
-      const { range, output } = args
-      if (!range) {
-        throw new Error('Should provide a range!')
-      }
+      const { output } = args
 
-      if (output !== 'console' && !fs.lstatSync(output).isDirectory()) {
-        throw new Error('You must provide a folder as --output, not a file path!')
+      if (output !== 'console' && (!fs.existsSync(output) || !fs.lstatSync(output).isDirectory())) {
+        throw new Error('You must provide a valid and existing folder as --output!')
       }
 
       return true // tell Yargs that the arguments passed the check
     })
+    .demandOption('range')
     .help()
 }
 

@@ -6,8 +6,8 @@ const {
   Handlebars, versionTemplate, taskTemplate, headerTemplate
 } = require('../../helpers/hbs')
 const { verifyTargetVersion } = require('../../helpers/semver')
-const { VERSION_LINE_REGEX, UNRELEASED_LINE_REGEX, URL_TASK_REGEX } = require('../../helpers/regexprs')
-const { createVersionIndex, createCommitSummary, parseTaskFile } = require('../../helpers/md')
+const { VERSION_LINE_REGEX, UNRELEASED_LINE_REGEX } = require('../../helpers/regexprs')
+const { createVersionIndex, parseTaskFile } = require('../../helpers/md')
 
 async function handler (argv) {
   const targetRoot = path.resolve(process.cwd(), '.')
@@ -47,13 +47,6 @@ async function handler (argv) {
     }
   }
 
-  // check taskUrlTemplate
-  const urlRegexCheck = new RegExp(URL_TASK_REGEX)
-  if (!urlRegexCheck.test(argv.taskUrlTemplate)) {
-    console.error('The inserted URL is not supported: the tools accepts valid URL that contains the keyword {taskCode}.')
-    process.exit(1)
-  }
-
   if (!changelogExists && !argv.createOutputIfNotFound) {
     console.error(`Missing file ${changelogPath} and option createOutputIfNotFound set to false.`)
     console.log('Unable to continue. The tool will be shut down.')
@@ -91,11 +84,6 @@ async function handler (argv) {
   const tempChangelog = `${changelogPath}-temp-${new Date().getTime()}`
   const writeStream = fs.createWriteStream(tempChangelog)
 
-  writeStream.on('error', (e) => {
-    console.error(e)
-    process.exit(1)
-  })
-
   // write header template
   const header = Handlebars.compile(headerTemplate)({
     index: createVersionIndex(targetVersion, oldChangelogBody)
@@ -119,7 +107,7 @@ async function handler (argv) {
     const taskBody = fs.readFileSync(fullPath, 'utf-8')
 
     tasks.push(taskCode)
-    const urlTask = argv.taskUrlTemplate.replace('{taskCode}', taskCode)
+    const urlTask = (argv.taskUrlTemplate || '').replace('{taskCode}', taskCode)
     finalSectionMap = parseTaskFile(taskCode, taskBody, urlTask, finalSectionMap)
   })
 
@@ -144,15 +132,10 @@ async function handler (argv) {
       writeStream.write('\n')
     })
 
-  if (argv.includeCommits) {
-    writeStream.write('\n##### Commit history\n\n')
-    const commitSummary = await createCommitSummary()
-    writeStream.write(commitSummary)
-  }
-
   writeStream.on('finish', () => {
     // write on the final changelog file
     fs.copyFile(tempChangelog, changelogPath, (err) => {
+      /* c8 ignore next 4 */
       if (err) {
         console.error(err)
         process.exit(1)

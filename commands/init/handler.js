@@ -19,12 +19,6 @@ async function handler (argv) {
   }
 
   const writeStream = fs.createWriteStream(changelogPath)
-
-  writeStream.on('error', (e) => {
-    console.error(e)
-    process.exit(1)
-  })
-
   // write header template
   const header = Handlebars.compile(headerTemplate)({})
   writeStream.write(header)

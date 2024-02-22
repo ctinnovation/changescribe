@@ -10,12 +10,14 @@ function verifyTargetVersion (targetVersion, currentChangelog) {
     currentChangelog
   )
 
+  /* c8 ignore next 2 */
   if (!versionMatches || !versionMatches[1]) {
     return
   }
 
   const lastVersion = versionMatches[1]
 
+  /* c8 ignore next 4 */
   if (!semver.valid(lastVersion)) {
     console.error('Last version is not a valid semver version!', `[${lastVersion}]`)
     process.exit(1)

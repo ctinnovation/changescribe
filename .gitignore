@@ -108,3 +108,6 @@ PR-*
 KALI-*
 TEST-*
 CHANGELOG
+
+.tap
+!test/unreleased

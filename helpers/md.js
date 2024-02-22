@@ -1,14 +1,8 @@
-const git = require('simple-git')({
-  baseDir: process.cwd(),
-  binary: 'git'
-})
-
 const { Handlebars, versionTemplate, lineCodeTemplate } = require('./hbs')
 const {
   VERSION_LINE_REGEX,
   TASK_SECTION_REGEX,
   SUBSECTION_TITLE_REGEX,
-  upperFirst,
   matchesToArray,
   SUBSECTION_POINT_REGEX,
   matchSectionTitle
@@ -104,17 +98,7 @@ function createVersionIndex (targetVersion, currentChangelog) {
   return result
 }
 
-async function createCommitSummary () {
-  const commits = await git.log({
-    from: 'main'
-  })
-  return commits.all
-    .map((c) => ` * ${c.message}`)
-    .join('\n')
-}
-
 module.exports = {
   createVersionIndex,
-  createCommitSummary,
   parseTaskFile
 }

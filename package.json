@@ -8,6 +8,7 @@
     "changelog",
     "changelog.md",
     "changelogger",
+    "changescribe",
     "project",
     "management",
     "versioning",
@@ -23,13 +24,13 @@
   ],
   "scripts": {
     "start": "node . --targetVersion 1.0.0",
-    "test": "exit 0",
+    "test": "tap run --coverage-report=lcov",
     "version": "git branch -D 'release_'$npm_package_version || true && git checkout -b 'release_'$npm_package_version && node ./cli.js -p && git add .",
     "postversion": "git commit -mv$npm_package_version && git push --set-upstream origin 'release_'$npm_package_version"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:ctinnovation/changelogger.git"
+    "url": "git@github.com:ctinnovation/changescribe.git"
   },
   "author": "",
   "license": "ISC",
@@ -37,13 +38,14 @@
     "handlebars": "^4.7.7",
     "moment": "^2.29.1",
     "semver": "^7.3.5",
-    "simple-git": "^2.40.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@types/tap": "^15.0.11",
     "eslint": "^8.56.0",
     "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.1"
+    "eslint-plugin-import": "^2.29.1",
+    "tap": "^18.7.0"
   },
   "bin": "cli.js",
   "engines": {

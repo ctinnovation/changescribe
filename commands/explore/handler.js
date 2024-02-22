@@ -66,7 +66,7 @@ async function handler (argv) {
   const pkgPath = path.join(targetRoot, 'package.json')
   let name = 'Unknown'
   if (!fs.existsSync(pkgPath)) {
-    console.warning('Unable to find a valid package.json to retrieve the name from!')
+    console.warn('Unable to find a valid package.json to retrieve the name from!')
   } else {
     name = require(pkgPath).name
   }
@@ -74,11 +74,12 @@ async function handler (argv) {
     ? argv.input
     : path.resolve(targetRoot, argv.input)
 
-  const lines = fs.readFileSync(changelogInputPath, 'utf-8')
-
-  if (!lines) {
+  const exists = fs.existsSync(changelogInputPath)
+  if (!exists) {
     throw new Error(`File ${argv.input} not found`)
   }
+
+  const lines = fs.readFileSync(changelogInputPath, 'utf-8')
 
   let min
   let max
@@ -102,6 +103,7 @@ async function handler (argv) {
       max = splittedVersions[0]
     }
   // any other input
+  /* c8 ignore next 5 */
   } else {
     console.error('Error in the inserted range.')
     console.log('Closing the tool.')

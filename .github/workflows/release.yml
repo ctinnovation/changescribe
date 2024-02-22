@@ -32,7 +32,7 @@ jobs:
           scope: "@ctinnovation"
 
       - name: install dependencies
-        run: npm install -g @ctinnovation/changelogger
+        run: npm install -g changescribe
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_GET_TOKEN}}
 

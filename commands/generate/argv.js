@@ -5,9 +5,8 @@ const COMMAND_DEFAULTS = {
   fromPackageJson: false,
   output: path.resolve(process.cwd(), './CHANGELOG.md'),
   input: path.resolve(process.cwd(), './unreleased'),
-  includeCommits: false,
   excludeTaskList: false,
-  createOutputIfNotFound: false
+  createOutputIfNotFound: true
 }
 
 const argvBuilder = function argvBuilder (yargs) {
@@ -37,9 +36,6 @@ const argvBuilder = function argvBuilder (yargs) {
     .alias('input', 'i')
     .default('input', defaults.input)
     .describe('input', 'Input folder for compiling the changelog')
-    .boolean('includeCommits')
-    .default('includeCommits', defaults.includeCommits)
-    .describe('includeCommits', 'Include branch commits in new release')
     .boolean('excludeTaskList')
     .default('excludeTaskList', defaults.excludeTaskList)
     .describe('excludeTaskList', 'Exclude tasks list after release title')
@@ -56,12 +52,12 @@ const argvBuilder = function argvBuilder (yargs) {
         throw new Error('Should provide --targetVersion or use the --fromPackageJson flag!')
       }
 
-      if (!taskUrlTemplate.includes('{taskCode}')) {
-        throw new Error('Should provide a URL that contains `{taskCode}`!')
-      }
-
       if (!excludeTaskList && !taskUrlTemplate) {
         throw new Error('Should provide --taskUrlTemplate when --excludeTaskList is false!')
+      }
+
+      if (!excludeTaskList && !taskUrlTemplate.includes('{taskCode}')) {
+        throw new Error('Should provide a URL that contains `{taskCode}`!')
       }
 
       return true // tell Yargs that the arguments passed the check

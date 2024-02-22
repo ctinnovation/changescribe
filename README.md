@@ -129,7 +129,6 @@ Feel free to customize your template by modifying the templates inside `template
 | -p, --fromPackageJson    | Retrieve target version from pkg.json *(overrides `--targetVersion`)*     | [boolean] [default: false]                     |
 | -o, --output             | Ouput CHANGELOG file                                                      | [string] [default: process.pwd()/CHANGELOG.md] |
 | -i, --input              | Input folder for compiling the changelog                                  | [string] [default: process.pwd()/unreleased]   |
-| --includeCommits         | Include branch commits in new release                                     | [boolean] [default: false]                     |
 | -u, --taskUrlTemplate    | Associated task URL template. *Mandatory if `--excludeTaskList` is false* | [string] [required]                            |
 | --excludeTaskList        | Exclude tasks list after release title                                    | [boolean] [default: false]                     |
 | --createOutputIfNotFound | Create a new output file if not found                                     | [boolean] [default: true]                      |
