@@ -36,7 +36,7 @@
   "license": "ISC",
   "dependencies": {
     "handlebars": "^4.7.7",
-    "moment": "^2.29.1",
+    "moment": "^2.30.1",
     "semver": "^7.3.5",
     "yargs": "^17.7.2"
   },
