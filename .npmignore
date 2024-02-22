@@ -3,3 +3,10 @@ node_modules/
 gitstronaut.jpg
 .github/
 unreleased/
+test/
+changescribe.jpg
+.vscode/
+.github/
+.changescriberc
+.eslintrc.js
+CHANGELOG.md
