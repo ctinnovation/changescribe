@@ -30,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:ctinnovation/changescribe.git"
+    "url": "git+ssh://git@github.com/ctinnovation/changescribe.git"
   },
   "author": "",
   "license": "ISC",
@@ -47,7 +47,9 @@
     "eslint-plugin-import": "^2.29.1",
     "tap": "^18.7.0"
   },
-  "bin": "cli.js",
+  "bin": {
+    "changescribe": "cli.js"
+  },
   "engines": {
     "node": ">=16"
   }
