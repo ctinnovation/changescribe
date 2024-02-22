@@ -5,8 +5,28 @@ All notable changes to this project will be documented in this file.
 [![CHANGELOG
 FORMAT](https://img.shields.io/badge/Format-keepachangelog-orange.svg)](https://keepachangelog.com/en/1.0.0/) [![VERSIONING](https://img.shields.io/badge/Versioning-semver-red.svg)](https://semver.org/spec/v2.0.0.html)
 
-- [[2.0.0] - 2023-09-25](#100---2023-09-25)
+- [[3.0.0] - 2024-02-22](#300---2024-02-22)
+- [[2.0.0] - 2023-09-25](#200---2023-09-25)
 
+## [3.0.0] - 2024-02-22
+
+
+### Added
+
+- Added test for complete test coverage ‧ [BAC-931]()
+- Added GitHub Actions in order to standardize CI (added test flow and release flow) ‧ [BAC-931]()
+- Improved documentation ‧ [BAC-931]()
+- Added ESLINT standard code style ‧ [BAC-931]()
+- Added  `.changescriberc` to configure this tool execution within a specific project and without always passing arguments ‧ [BAC-931]()
+
+### Changed
+
+- [breaking] Renamed package from `changelogger` to `changescribe` ‧ [BAC-931]()
+- Published package as `changescribe` to npmjs ‧ [BAC-931]()
+
+### Removed
+
+- [breaking] Removed `includeCommits` for wrong implementation: it should be reimplemented with tags checks in future ‧ [BAC-931]()
 ## [2.0.0] - 2023-09-25
 
 ### Added
