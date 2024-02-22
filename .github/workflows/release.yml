@@ -21,8 +21,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
@@ -92,8 +90,6 @@ jobs:
       - name: Checkout
         if: "${{ env.TAG }}"
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Tagging
         if: "${{ env.TAG }}"
