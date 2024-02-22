@@ -1,41 +1,48 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('path')
+const fs = require('fs')
+const { loadDefaultsFromFile } = require('../../helpers/defaults')
 
-const argvBuilder = function argvBuilder(yargs) {
+const COMMAND_DEFAULTS = {
+  input: path.resolve(process.cwd(), './CHANGELOG.md'),
+  output: 'console'
+}
+
+const argvBuilder = function argvBuilder (yargs) {
+  const defaults = loadDefaultsFromFile('explore', COMMAND_DEFAULTS)
   yargs
     .example(
       '$0 explore --range 1.2.4~3.2.1',
-      'Genera il riassunto del file CHANGELOG.md dalla versione 1.2.4 esclusa alla versione 3.2.1',
+      'Generate CHANGELOG summary from version 1.2.4 (exclusive) to version 3.2.1'
     )
     .example(
       '$0 explore --range 1.2.4',
-      'Genera il riassunto del file CHANGELOG.md dalla versione 1.2.4 esclusa all\'ultima versione trovata',
+      'Generate CHANGELOG summary from version 1.2.4 (exclusive) to the latest'
     )
     .string('range')
     .alias('range', 'r')
     .describe('range', 'Range of versions in a format like X.Y.Z ~ A.B.C')
-    .demandOption('range', 'Should provide a range!')
+    .default('range', defaults.range)
     .string('output')
     .alias('output', 'o')
-    .default('output', 'console')
+    .default('output', defaults.output)
     .describe('output', 'Output path')
     .string('input')
     .alias('input', 'i')
-    .default('input', path.resolve(process.cwd(), './CHANGELOG.md'))
+    .default('input', defaults.input)
     .describe('input', 'Input CHANGELOG for explore diffs')
     .check((args) => {
-      const { range, output } = args;
-      if (!range) {
-        throw new Error('Should provide a range!');
+      const { output } = args
+
+      if (output !== 'console' && (!fs.existsSync(output) || !fs.lstatSync(output).isDirectory())) {
+        throw new Error('You must provide a valid and existing folder as --output!')
       }
-      if (output !== 'console' && !fs.lstatSync(output).isDirectory()) {
-        throw new Error('You must provide a folder, not a file path!');
-      }
-      return true; // tell Yargs that the arguments passed the check
+
+      return true // tell Yargs that the arguments passed the check
     })
-    .help();
-};
+    .demandOption('range')
+    .help()
+}
 
 module.exports = {
-  argvBuilder,
-};
+  argvBuilder
+}

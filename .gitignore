@@ -103,8 +103,10 @@ dist
 # TernJS port file
 .tern-port
 
-unreleased/
-BAC-*
+PR-*
 KALI-*
 TEST-*
 CHANGELOG
+
+.tap
+!test/unreleased

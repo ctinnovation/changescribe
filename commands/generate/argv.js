@@ -1,59 +1,70 @@
-const path = require('path');
+const path = require('path')
+const { loadDefaultsFromFile } = require('../../helpers/defaults')
 
-const defaultURL = 'https://ctinnovation.atlassian.net/browse/{taskCode}';
+const COMMAND_DEFAULTS = {
+  fromPackageJson: false,
+  output: path.resolve(process.cwd(), './CHANGELOG.md'),
+  input: path.resolve(process.cwd(), './unreleased'),
+  excludeTaskList: false,
+  createOutputIfNotFound: true
+}
 
-const argvBuilder = function argvBuilder(yargs) {
+const argvBuilder = function argvBuilder (yargs) {
+  const defaults = loadDefaultsFromFile('generate', COMMAND_DEFAULTS)
   yargs
     .example(
       '$0 generate -t 1.0.0',
-      'Genera il changelog alla versione 1.0.0',
+      'Generate CHANGELOG for version 1.0.0'
     )
     .example(
       '$0 -t 1.0.0',
-      'Genera il changelog alla versione 1.0.0',
+      'Generate CHANGELOG for version 1.0.0'
     )
     .string('targetVersion')
     .alias('targetVersion', 't')
     .describe('targetVersion', 'Target version')
+    .default('targetVersion', defaults.targetVersion)
     .boolean('fromPackageJson')
     .alias('fromPackageJson', 'p')
-    .default('fromPackageJson', false)
+    .default('fromPackageJson', defaults.fromPackageJson)
     .describe('fromPackageJson', 'Retrieve version from pkg.json')
     .string('output')
     .alias('output', 'o')
-    .default('output', path.resolve(process.cwd(), './CHANGELOG.md'))
+    .default('output', defaults.output)
     .describe('output', 'Ouput CHANGELOG file')
     .string('input')
     .alias('input', 'i')
-    .default('input', path.resolve(process.cwd(), './unreleased'))
+    .default('input', defaults.input)
     .describe('input', 'Input folder for compiling the changelog')
-    .boolean('includeCommits')
-    .default('includeCommits', false)
-    .describe('includeCommits', 'Include branch commits in new release')
     .boolean('excludeTaskList')
-    .default('excludeTaskList', false)
+    .default('excludeTaskList', defaults.excludeTaskList)
     .describe('excludeTaskList', 'Exclude tasks list after release title')
     .boolean('createOutputIfNotFound')
-    .default('createOutputIfNotFound', true)
+    .default('createOutputIfNotFound', defaults.createOutputIfNotFound)
     .describe('createOutputIfNotFound', 'Create a new output file if not found')
     .string('taskUrlTemplate')
     .alias('taskUrlTemplate', 'u')
-    .default('taskUrlTemplate', defaultURL)
     .describe('taskUrlTemplate', 'Associated task URL')
+    .default('taskUrlTemplate', defaults.taskUrlTemplate)
     .check((args) => {
-      const { targetVersion, fromPackageJson, taskUrlTemplate } = args;
+      const { targetVersion, fromPackageJson, taskUrlTemplate, excludeTaskList } = args
       if (!targetVersion && !fromPackageJson) {
-        throw new Error('Should provide a target version or use the --fromPackageJson flag!');
+        throw new Error('Should provide --targetVersion or use the --fromPackageJson flag!')
       }
-      if (taskUrlTemplate && !taskUrlTemplate.includes('{taskCode}')) {
-        throw new Error('Should provide a URL that contains `{taskCode}`!');
-      } else {
-        return true; // tell Yargs that the arguments passed the check
+
+      if (!excludeTaskList && !taskUrlTemplate) {
+        throw new Error('Should provide --taskUrlTemplate when --excludeTaskList is false!')
       }
+
+      if (!excludeTaskList && !taskUrlTemplate.includes('{taskCode}')) {
+        throw new Error('Should provide a URL that contains `{taskCode}`!')
+      }
+
+      return true // tell Yargs that the arguments passed the check
     })
-    .help();
-};
+    .help()
+}
 
 module.exports = {
-  argvBuilder,
-};
+  argvBuilder
+}

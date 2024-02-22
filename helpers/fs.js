@@ -1,16 +1,16 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-function emptyFolder(folder) {
-  const files = fs.readdirSync(folder);
+function emptyFolder (folder) {
+  const files = fs.readdirSync(folder)
   files.forEach((file) => {
     if (file === '.gitkeep') {
-      return;
+      return
     }
-    fs.unlinkSync(path.resolve(folder, file));
-  });
+    fs.unlinkSync(path.resolve(folder, file))
+  })
 }
 
 module.exports = {
-  emptyFolder,
-};
+  emptyFolder
+}
