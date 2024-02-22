@@ -35,6 +35,7 @@ jobs:
 
       - name: update version and changelog
         run: |
+          npm ci
           npm version ${{ github.event.inputs.semver }} --no-git-tag-version
 
       - name: Get new version from package.json
