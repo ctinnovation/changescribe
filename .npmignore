@@ -1,12 +1,13 @@
 node_modules/
 .eslintrc.cjs
-gitstronaut.jpg
 .github/
 unreleased/
 test/
-changescribe.jpg
+changescribe.jpeg
 .vscode/
 .github/
 .changescriberc
 .eslintrc.js
 CHANGELOG.md
+*.jpeg
+*.jpg
