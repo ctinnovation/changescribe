@@ -33,7 +33,7 @@
     "url": "git+ssh://git@github.com/ctinnovation/changescribe.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "handlebars": "^4.7.7",
     "moment": "^2.30.1",
