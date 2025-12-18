@@ -1,6 +1,8 @@
 {
   "generate": {
     "fromPackageJson": true,
-    "excludeTaskList": true
+    "excludeTaskList": false,
+    "issueSystem": "github",
+    "taskUrlTemplate": "https://github.com/ctinnovation/{project}/issues/{taskCode}"
   }
 }

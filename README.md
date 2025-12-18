@@ -53,6 +53,74 @@ Once you run `changescribe` the arguments defaults will be resolved in this orde
 2. `.changescriberc(.c?js)?` values, if the file exists
 3. Inline CLI arguments passed (EG: `changescribe --targetVersion 1.1.0`)
 
+### Issue Tracking System Integration
+
+Changescribe supports automatic link generation to your issue tracking system (GitHub, GitLab, Jira, etc.).
+
+#### Simple Configuration (Recommended)
+
+Use the `issueSystem` parameter to automatically configure the pattern for extracting project and issue information:
+
+**GitHub Issues:**
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "issueSystem": "github",
+    "taskUrlTemplate": "https://github.com/your-org/{project}/issues/{taskCode}"
+  }
+}
+```
+
+File naming: `projectname-123.md` (e.g., `my-app-42.md`)
+- Automatically extracts: project = `my-app`, issue = `42`
+- Generates link: `https://github.com/your-org/my-app/issues/42`
+
+**Jira Issues:**
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "issueSystem": "jira",
+    "taskUrlTemplate": "https://yourdomain.atlassian.net/browse/{taskCode}"
+  }
+}
+```
+
+File naming: `PROJ-123.md`
+- Uses full filename: taskCode = `PROJ-123`
+- Generates link: `https://yourdomain.atlassian.net/browse/PROJ-123`
+
+**GitLab Issues:**
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "issueSystem": "gitlab",
+    "taskUrlTemplate": "https://gitlab.com/your-org/{project}/-/issues/{taskCode}"
+  }
+}
+```
+
+File naming: `projectname-456.md`
+- Automatically extracts: project = `projectname`, issue = `456`
+- Generates link: `https://gitlab.com/your-org/projectname/-/issues/456`
+
+#### Advanced Configuration
+
+For custom patterns, use `taskCodePattern` with a regex:
+
+```json
+{
+  "generate": {
+    "taskCodePattern": "^([A-Z]+-\\d+)",
+    "taskUrlTemplate": "https://example.com/issue/{taskCode}"
+  }
+}
+```
+
+**Note:** `taskCodePattern` overrides `issueSystem` if both are specified.
+
 ## Commands and usage
 
 ### Generate (default)
@@ -130,6 +198,8 @@ Feel free to customize your template by modifying the templates inside `template
 | -o, --output             | Ouput CHANGELOG file                                                      | [string] [default: process.pwd()/CHANGELOG.md] |
 | -i, --input              | Input folder for compiling the changelog                                  | [string] [default: process.pwd()/unreleased]   |
 | -u, --taskUrlTemplate    | Associated task URL template. *Mandatory if `--excludeTaskList` is false* | [string] [required]                            |
+| --issueSystem            | Issue tracking system: "github", "gitlab", or "jira" *(auto-configures pattern)* | [string]                            |
+| --taskCodePattern        | Regex pattern to extract task code from filename *(advanced, overrides issueSystem)* | [string]                     |
 | --excludeTaskList        | Exclude tasks list after release title                                    | [boolean] [default: false]                     |
 | --createOutputIfNotFound | Create a new output file if not found                                     | [boolean] [default: true]                      |
 | --version                | Show version number                                                       | [boolean]                                      |

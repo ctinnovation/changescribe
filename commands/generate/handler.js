@@ -9,6 +9,23 @@ const { verifyTargetVersion } = require('../../helpers/semver')
 const { VERSION_LINE_REGEX, UNRELEASED_LINE_REGEX } = require('../../helpers/regexprs')
 const { createVersionIndex, parseTaskFile } = require('../../helpers/md')
 
+// Predefined patterns for common issue tracking systems
+const ISSUE_SYSTEM_PATTERNS = {
+  github: '^(.+)-(\\d+)$', // projectname-123 -> project: projectname, issue: 123
+  gitlab: '^(.+)-(\\d+)$', // projectname-456 -> project: projectname, issue: 456
+  jira: null // PROJ-123 -> uses full filename as taskCode
+}
+
+function getPatternForIssueSystem (issueSystem) {
+  if (!issueSystem) return null
+  const pattern = ISSUE_SYSTEM_PATTERNS[issueSystem.toLowerCase()]
+  if (pattern === undefined) {
+    console.warn(`Warning: Unknown issueSystem "${issueSystem}". Using default behavior.`)
+    return null
+  }
+  return pattern
+}
+
 async function handler (argv) {
   const targetRoot = path.resolve(process.cwd(), '.')
   /* c8 ignore next 3 */
@@ -104,20 +121,53 @@ async function handler (argv) {
   const tasks = []
 
   releaseFiles.forEach((releaseFile) => {
-    const taskCode = path.basename(releaseFile, '.md')
+    const fileName = path.basename(releaseFile, '.md')
+    let taskCode = fileName
+    let project = ''
+
+    // Determine which pattern to use: taskCodePattern has priority, then issueSystem
+    const patternToUse = argv.taskCodePattern || getPatternForIssueSystem(argv.issueSystem)
+
+    // Extract task code and project using pattern if provided
+    if (patternToUse) {
+      try {
+        const regex = new RegExp(patternToUse)
+        const match = fileName.match(regex)
+        if (match) {
+          // If pattern has 2 groups, first is project, second is taskCode
+          // If pattern has 1 group, it's just the taskCode
+          if (match[2]) {
+            project = match[1]
+            taskCode = match[2]
+          } else if (match[1]) {
+            taskCode = match[1]
+          }
+        } else {
+          console.warn(`Warning: Pattern did not match filename "${fileName}". Using full filename as taskCode.`)
+        }
+      } catch (error) {
+        console.error(`Error: Invalid pattern regex: ${error.message}`)
+        process.exit(1)
+      }
+    }
+
     const fullPath = path.resolve(releaseFolder, releaseFile)
     const taskBody = fs.readFileSync(fullPath, 'utf-8')
 
-    tasks.push(taskCode)
-    const urlTask = (argv.taskUrlTemplate || '').replace('{taskCode}', taskCode)
+    tasks.push({ taskCode, project })
+    let urlTask = (argv.taskUrlTemplate || '')
+      .replace('{taskCode}', taskCode)
+      .replace('{project}', project)
     finalSectionMap = parseTaskFile(taskCode, taskBody, urlTask, finalSectionMap)
   })
 
   // task summary after version title
   if (!argv.excludeTaskList) {
     tasks.forEach((task) => {
-      const urlTask = argv.taskUrlTemplate.replace('{taskCode}', task)
-      const badge = Handlebars.compile(taskTemplate)({ taskCode: task, urlTask })
+      const urlTask = argv.taskUrlTemplate
+        .replace('{taskCode}', task.taskCode)
+        .replace('{project}', task.project)
+      const badge = Handlebars.compile(taskTemplate)({ taskCode: task.taskCode, urlTask })
       writeStream.write(`${badge} `)
     })
     writeStream.write('\n')

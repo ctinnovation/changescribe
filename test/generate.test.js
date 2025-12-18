@@ -196,3 +196,99 @@ t.test('should throw on target version smaller than current', async () => {
       t.ok(e.stderr.includes('Target version must be greater than last found version!'))
     })
 })
+
+t.test('should support issueSystem=github with project extraction', async () => {
+  // Create GitHub-style issue files
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'my-project-42.md'),
+    '## Added\n- GitHub integration support\n\n## Fixed\n- Bug in URL generation'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '3.0.0',
+      issueSystem: 'github',
+      taskUrlTemplate: 'https://github.com/myorg/{project}/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [3.0.0]'))
+  t.ok(content.includes('https://github.com/myorg/my-project/issues/42'))
+  t.ok(content.includes('GitHub integration support'))
+  t.ok(content.includes('Bug in URL generation'))
+})
+
+t.test('should support issueSystem=jira without project extraction', async () => {
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '3.1.0',
+      issueSystem: 'jira',
+      taskUrlTemplate: 'https://mycompany.atlassian.net/browse/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [3.1.0]'))
+  // Should use full filename as taskCode
+  t.ok(content.includes('https://mycompany.atlassian.net/browse/BR-3'))
+  t.ok(content.includes('https://mycompany.atlassian.net/browse/CH-2'))
+})
+
+t.test('should support issueSystem=gitlab with project extraction', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'awesome-app-99.md'),
+    '## Added\n- GitLab integration\n\n## Changed\n- Updated CI/CD'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '4.0.0',
+      issueSystem: 'gitlab',
+      taskUrlTemplate: 'https://gitlab.com/mygroup/{project}/-/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [4.0.0]'))
+  t.ok(content.includes('https://gitlab.com/mygroup/awesome-app/-/issues/99'))
+})
+
+t.test('should support taskCodePattern overriding issueSystem', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'CUSTOM-789.md'),
+    '## Added\n- Custom pattern support'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '5.0.0',
+      issueSystem: 'github', // This should be ignored
+      taskCodePattern: '^(CUSTOM-\\d+)',
+      taskUrlTemplate: 'https://custom.example.com/issue/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [5.0.0]'))
+  t.ok(content.includes('https://custom.example.com/issue/CUSTOM-789'))
+})
