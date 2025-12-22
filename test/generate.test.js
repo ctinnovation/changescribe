@@ -292,3 +292,61 @@ t.test('should support taskCodePattern overriding issueSystem', async () => {
   t.ok(content.includes('## [5.0.0]'))
   t.ok(content.includes('https://custom.example.com/issue/CUSTOM-789'))
 })
+
+t.test('should support projectName with numeric filenames', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, '42.md'),
+    '## Added\n- Simplified issue tracking\n\n## Fixed\n- URL generation with projectName'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '6.0.0',
+      issueSystem: 'github',
+      projectName: 'my-awesome-project',
+      taskUrlTemplate: 'https://github.com/myorg/{project}/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [6.0.0]'))
+  t.ok(content.includes('https://github.com/myorg/my-awesome-project/issues/42'))
+  t.ok(content.includes('Simplified issue tracking'))
+})
+
+t.test('should support projectName with mixed filenames', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  // Test with numeric filename
+  fs.writeFileSync(
+    path.join(unreleasedPath, '99.md'),
+    '## Added\n- Feature A'
+  )
+  // Test with project-number filename (should extract just the number)
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'oldstyle-100.md'),
+    '## Fixed\n- Bug B'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '7.0.0',
+      projectName: 'unified-project',
+      taskUrlTemplate: 'https://github.com/org/{project}/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [7.0.0]'))
+  // Both should use the projectName from config
+  t.ok(content.includes('https://github.com/org/unified-project/issues/99'))
+  t.ok(content.includes('https://github.com/org/unified-project/issues/100'))
+})

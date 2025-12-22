@@ -125,29 +125,46 @@ async function handler (argv) {
     let taskCode = fileName
     let project = ''
 
-    // Determine which pattern to use: taskCodePattern has priority, then issueSystem
-    const patternToUse = argv.taskCodePattern || getPatternForIssueSystem(argv.issueSystem)
-
-    // Extract task code and project using pattern if provided
-    if (patternToUse) {
-      try {
-        const regex = new RegExp(patternToUse)
-        const match = fileName.match(regex)
-        if (match) {
-          // If pattern has 2 groups, first is project, second is taskCode
-          // If pattern has 1 group, it's just the taskCode
-          if (match[2]) {
-            project = match[1]
-            taskCode = match[2]
-          } else if (match[1]) {
-            taskCode = match[1]
-          }
+    // If projectName is provided in config, use it directly
+    if (argv.projectName) {
+      project = argv.projectName
+      // If filename is just numbers, use it as taskCode
+      if (/^\d+$/.test(fileName)) {
+        taskCode = fileName
+      } else {
+        // Try to extract just the number from patterns like "project-123" or "123"
+        const numberMatch = fileName.match(/(\d+)$/)
+        if (numberMatch) {
+          taskCode = numberMatch[1]
         } else {
-          console.warn(`Warning: Pattern did not match filename "${fileName}". Using full filename as taskCode.`)
+          taskCode = fileName
         }
-      } catch (error) {
-        console.error(`Error: Invalid pattern regex: ${error.message}`)
-        process.exit(1)
+      }
+    } else {
+      // Determine which pattern to use: taskCodePattern has priority, then issueSystem
+      const patternToUse = argv.taskCodePattern || getPatternForIssueSystem(argv.issueSystem)
+
+      // Extract task code and project using pattern if provided
+      if (patternToUse) {
+        try {
+          const regex = new RegExp(patternToUse)
+          const match = fileName.match(regex)
+          if (match) {
+            // If pattern has 2 groups, first is project, second is taskCode
+            // If pattern has 1 group, it's just the taskCode
+            if (match[2]) {
+              project = match[1]
+              taskCode = match[2]
+            } else if (match[1]) {
+              taskCode = match[1]
+            }
+          } else {
+            console.warn(`Warning: Pattern did not match filename "${fileName}". Using full filename as taskCode.`)
+          }
+        } catch (error) {
+          console.error(`Error: Invalid pattern regex: ${error.message}`)
+          process.exit(1)
+        }
       }
     }
 

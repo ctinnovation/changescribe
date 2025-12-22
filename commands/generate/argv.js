@@ -8,7 +8,8 @@ const COMMAND_DEFAULTS = {
   excludeTaskList: false,
   createOutputIfNotFound: true,
   taskCodePattern: null,
-  issueSystem: null
+  issueSystem: null,
+  projectName: null
 }
 
 const argvBuilder = function argvBuilder (yargs) {
@@ -54,6 +55,9 @@ const argvBuilder = function argvBuilder (yargs) {
     .string('issueSystem')
     .describe('issueSystem', 'Issue tracking system: "github", "gitlab", or "jira" (auto-configures pattern)')
     .default('issueSystem', defaults.issueSystem)
+    .string('projectName')
+    .describe('projectName', 'Project name for GitHub/GitLab (allows using just issue numbers as filenames, e.g., "42.md")')
+    .default('projectName', defaults.projectName)
     .check((args) => {
       const { targetVersion, fromPackageJson, taskUrlTemplate, excludeTaskList } = args
       if (!targetVersion && !fromPackageJson) {

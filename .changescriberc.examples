@@ -2,7 +2,30 @@
 
 ## Simple Configuration (Recommended)
 
-### GitHub Issues
+### GitHub Issues - Simplest Way (with projectName)
+
+If your project has issues on a single GitHub repository:
+
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "excludeTaskList": false,
+    "issueSystem": "github",
+    "projectName": "my-app",
+    "taskUrlTemplate": "https://github.com/your-org/{project}/issues/{taskCode}"
+  }
+}
+```
+
+**How it works:**
+- File naming: Just the issue number! `42.md`, `123.md`
+- Uses projectName from config: project = `my-app`
+- Uses filename as issue number
+- Generated link: `https://github.com/your-org/my-app/issues/42`
+- **Simplest configuration possible!**
+
+### GitHub Issues - Alternative (without projectName)
 
 If your files follow the pattern: `projectname-123.md` (e.g., `theater-unity3d-34.md`)
 

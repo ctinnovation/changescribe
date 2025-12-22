@@ -3,6 +3,7 @@
     "fromPackageJson": true,
     "excludeTaskList": false,
     "issueSystem": "github",
+    "projectName": "changescribe",
     "taskUrlTemplate": "https://github.com/ctinnovation/{project}/issues/{taskCode}"
   }
 }
