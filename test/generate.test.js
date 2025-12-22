@@ -196,3 +196,229 @@ t.test('should throw on target version smaller than current', async () => {
       t.ok(e.stderr.includes('Target version must be greater than last found version!'))
     })
 })
+
+t.test('should support issueSystem=github with project extraction', async () => {
+  // Create GitHub-style issue files
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'my-project-42.md'),
+    '## Added\n- GitHub integration support\n\n## Fixed\n- Bug in URL generation'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '3.0.0',
+      issueSystem: 'github',
+      taskUrlTemplate: 'https://github.com/myorg/{project}/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [3.0.0]'))
+  t.ok(content.includes('https://github.com/myorg/my-project/issues/42'))
+  t.ok(content.includes('GitHub integration support'))
+  t.ok(content.includes('Bug in URL generation'))
+})
+
+t.test('should support issueSystem=jira without project extraction', async () => {
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '3.1.0',
+      issueSystem: 'jira',
+      taskUrlTemplate: 'https://mycompany.atlassian.net/browse/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [3.1.0]'))
+  // Should use full filename as taskCode
+  t.ok(content.includes('https://mycompany.atlassian.net/browse/BR-3'))
+  t.ok(content.includes('https://mycompany.atlassian.net/browse/CH-2'))
+})
+
+t.test('should support issueSystem=gitlab with project extraction', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'awesome-app-99.md'),
+    '## Added\n- GitLab integration\n\n## Changed\n- Updated CI/CD'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '4.0.0',
+      issueSystem: 'gitlab',
+      taskUrlTemplate: 'https://gitlab.com/mygroup/{project}/-/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [4.0.0]'))
+  t.ok(content.includes('https://gitlab.com/mygroup/awesome-app/-/issues/99'))
+})
+
+t.test('should support taskCodePattern overriding issueSystem', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'CUSTOM-789.md'),
+    '## Added\n- Custom pattern support'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '5.0.0',
+      issueSystem: 'github', // This should be ignored
+      taskCodePattern: '^(CUSTOM-\\d+)',
+      taskUrlTemplate: 'https://custom.example.com/issue/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [5.0.0]'))
+  t.ok(content.includes('https://custom.example.com/issue/CUSTOM-789'))
+})
+
+t.test('should support projectName with numeric filenames', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, '42.md'),
+    '## Added\n- Simplified issue tracking\n\n## Fixed\n- URL generation with projectName'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '6.0.0',
+      issueSystem: 'github',
+      projectName: 'my-awesome-project',
+      taskUrlTemplate: 'https://github.com/myorg/{project}/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [6.0.0]'))
+  t.ok(content.includes('https://github.com/myorg/my-awesome-project/issues/42'))
+  t.ok(content.includes('Simplified issue tracking'))
+})
+
+t.test('should support projectName with mixed filenames', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  // Test with numeric filename
+  fs.writeFileSync(
+    path.join(unreleasedPath, '99.md'),
+    '## Added\n- Feature A'
+  )
+  // Test with project-number filename (should extract just the number)
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'oldstyle-100.md'),
+    '## Fixed\n- Bug B'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '7.0.0',
+      projectName: 'unified-project',
+      taskUrlTemplate: 'https://github.com/org/{project}/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [7.0.0]'))
+  // Both should use the projectName from config
+  t.ok(content.includes('https://github.com/org/unified-project/issues/99'))
+  t.ok(content.includes('https://github.com/org/unified-project/issues/100'))
+})
+
+t.test('should support issueSystem with unknown value (shows warning)', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'TASK-111.md'),
+    '## Added\n- Unknown system support'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '8.0.0',
+      issueSystem: 'unknown-system',
+      taskUrlTemplate: 'https://example.com/issue/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [8.0.0]'))
+  // Should use full filename as taskCode
+  t.ok(content.includes('https://example.com/issue/TASK-111'))
+})
+
+t.test('should support projectName with non-numeric filename', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'feature-xyz.md'),
+    '## Added\n- Special feature'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '9.0.0',
+      projectName: 'my-project',
+      taskUrlTemplate: 'https://github.com/org/{project}/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [9.0.0]'))
+  // Should use the full filename as taskCode since it has no numbers
+  t.ok(content.includes('https://github.com/org/my-project/issues/feature-xyz'))
+})
+
+t.test('should throw on invalid taskCodePattern regex', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'TEST-222.md'),
+    '## Added\n- Test feature'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '10.0.0',
+      taskCodePattern: '(invalid[regex',
+      taskUrlTemplate: 'https://example.com/issue/{taskCode}'
+    }
+  })
+
+  return spawnCli(__filename, `--output ${output}`)
+    .then(() => t.fail('expected rejection'))
+    .catch(e => {
+      t.ok(e.stderr.includes('Error: Invalid pattern regex'))
+    })
+})

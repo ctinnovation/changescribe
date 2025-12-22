@@ -1,0 +1,144 @@
+# Examples of .changescriberc configurations
+
+## Simple Configuration (Recommended)
+
+### GitHub Issues - Simplest Way (with projectName)
+
+If your project has issues on a single GitHub repository:
+
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "excludeTaskList": false,
+    "issueSystem": "github",
+    "projectName": "my-app",
+    "taskUrlTemplate": "https://github.com/your-org/{project}/issues/{taskCode}"
+  }
+}
+```
+
+**How it works:**
+- File naming: Just the issue number! `42.md`, `123.md`
+- Uses projectName from config: project = `my-app`
+- Uses filename as issue number
+- Generated link: `https://github.com/your-org/my-app/issues/42`
+- **Simplest configuration possible!**
+
+### GitHub Issues - Alternative (without projectName)
+
+If your files follow the pattern: `projectname-123.md` (e.g., `theater-unity3d-34.md`)
+
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "excludeTaskList": false,
+    "issueSystem": "github",
+    "taskUrlTemplate": "https://github.com/your-org/{project}/issues/{taskCode}"
+  }
+}
+```
+
+**How it works:**
+- File: `theater-unity3d-34.md` → project: `theater-unity3d`, issue: `34`
+- Generated link: `https://github.com/your-org/theater-unity3d/issues/34`
+- No need to specify regex pattern!
+
+### Jira Issues
+
+If your files follow the pattern: `KALI-123.md` (project code already in filename)
+
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "excludeTaskList": false,
+    "issueSystem": "jira",
+    "taskUrlTemplate": "https://yourdomain.atlassian.net/browse/{taskCode}"
+  }
+}
+```
+
+**How it works:**
+- File: `KALI-123.md` → taskCode: `KALI-123`
+- Generated link: `https://yourdomain.atlassian.net/browse/KALI-123`
+
+### GitLab Issues
+
+If your files follow the pattern: `myproject-456.md`
+
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "excludeTaskList": false,
+    "issueSystem": "gitlab",
+    "taskUrlTemplate": "https://gitlab.com/your-org/{project}/-/issues/{taskCode}"
+  }
+}
+```
+
+**How it works:**
+- File: `myproject-456.md` → project: `myproject`, issue: `456`
+- Generated link: `https://gitlab.com/your-org/myproject/-/issues/456`
+
+---
+
+## Advanced Configuration (Custom Patterns)
+
+If you need a custom pattern not covered by the predefined `issueSystem` options, you can use `taskCodePattern`:
+
+### Custom Pattern Example
+
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "taskCodePattern": "^([A-Z]+-\\d+)",
+    "taskUrlTemplate": "https://example.com/issue/{taskCode}"
+  }
+}
+```
+
+**Pattern explanation:**
+- `^([A-Z]+-\\d+)`: Matches uppercase letters, dash, and numbers at the start
+- Extracts "PROJ-123" from "PROJ-123-description.md"
+
+**Note:** `taskCodePattern` overrides `issueSystem` if both are specified.
+
+## Advanced Pattern Examples
+
+### Extract issue number from anywhere in filename
+Pattern: `issue-(\\d+)` for files like "feature-issue-789.md"
+
+```json
+{
+  "generate": {
+    "taskCodePattern": "issue-(\\d+)"
+  }
+}
+```
+
+### Extract prefix and number
+Pattern: `^([A-Z]+-\\d+)` for files like "FEAT-123-description.md"
+
+```json
+{
+  "generate": {
+    "taskCodePattern": "^([A-Z]+-\\d+)"
+  }
+}
+```
+
+### No pattern (default behavior)
+Uses the full filename without extension as taskCode
+
+```json
+{
+  "generate": {
+    "fromPackageJson": true,
+    "taskUrlTemplate": "https://example.com/task/{taskCode}"
+  }
+}
+```
