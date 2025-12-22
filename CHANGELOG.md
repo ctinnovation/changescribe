@@ -5,9 +5,17 @@ All notable changes to this project will be documented in this file.
 [![CHANGELOG
 FORMAT](https://img.shields.io/badge/Format-keepachangelog-orange.svg)](https://keepachangelog.com/en/1.0.0/) [![VERSIONING](https://img.shields.io/badge/Versioning-semver-red.svg)](https://semver.org/spec/v2.0.0.html)
 
+- [[3.1.0] - 2025-12-22](#310---2025-12-22)
 - [[3.0.0] - 2024-02-22](#300---2024-02-22)
 - [[2.0.0] - 2023-09-25](#200---2023-09-25)
 
+## [3.1.0] - 2025-12-22
+
+[![TASK](https://img.shields.io/badge/TASK-28-default.svg)](https://github.com/ctinnovation/changescribe/issues/28) 
+
+### Added
+
+- Add GitHub support ‧ [28](https://github.com/ctinnovation/changescribe/issues/28)
 ## [3.0.0] - 2024-02-22
 
 
