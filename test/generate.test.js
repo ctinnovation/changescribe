@@ -350,3 +350,75 @@ t.test('should support projectName with mixed filenames', async () => {
   t.ok(content.includes('https://github.com/org/unified-project/issues/99'))
   t.ok(content.includes('https://github.com/org/unified-project/issues/100'))
 })
+
+t.test('should support issueSystem with unknown value (shows warning)', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'TASK-111.md'),
+    '## Added\n- Unknown system support'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '8.0.0',
+      issueSystem: 'unknown-system',
+      taskUrlTemplate: 'https://example.com/issue/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [8.0.0]'))
+  // Should use full filename as taskCode
+  t.ok(content.includes('https://example.com/issue/TASK-111'))
+})
+
+t.test('should support projectName with non-numeric filename', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'feature-xyz.md'),
+    '## Added\n- Special feature'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '9.0.0',
+      projectName: 'my-project',
+      taskUrlTemplate: 'https://github.com/org/{project}/issues/{taskCode}'
+    }
+  })
+
+  await spawnCli(__filename, `--output ${output}`)
+  const exists = fs.existsSync(output)
+  t.ok(exists)
+  const content = fs.readFileSync(output).toString('utf-8')
+  t.ok(content)
+  t.ok(content.includes('## [9.0.0]'))
+  // Should use the full filename as taskCode since it has no numbers
+  t.ok(content.includes('https://github.com/org/my-project/issues/feature-xyz'))
+})
+
+t.test('should throw on invalid taskCodePattern regex', async () => {
+  const unreleasedPath = path.resolve(root, path.basename(__filename), 'unreleased')
+  fs.writeFileSync(
+    path.join(unreleasedPath, 'TEST-222.md'),
+    '## Added\n- Test feature'
+  )
+
+  createChangescribeRc(__filename, {
+    generate: {
+      targetVersion: '10.0.0',
+      taskCodePattern: '(invalid[regex',
+      taskUrlTemplate: 'https://example.com/issue/{taskCode}'
+    }
+  })
+
+  return spawnCli(__filename, `--output ${output}`)
+    .then(() => t.fail('expected rejection'))
+    .catch(e => {
+      t.ok(e.stderr.includes('Error: Invalid pattern regex'))
+    })
+})
